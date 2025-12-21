@@ -83,6 +83,11 @@ def serve_static(filename):
 def health():
     return jsonify({'status': 'ok'})
 
+# Добавьте endpoint для пинга
+@app.route('/ping')
+def ping():
+    return jsonify({'status': 'ok', 'timestamp': datetime.now().isoformat()})
+
 @app.route('/robots.txt')
 def robots():
     return """User-agent: *
