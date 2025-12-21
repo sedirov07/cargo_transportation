@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory
 import requests
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 
@@ -11,6 +11,7 @@ load_dotenv()
 # Настройки для отправки в Telegram
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+SITE_NAME = os.getenv('SITE_NAME', '')
 
 @app.route('/')
 def index():
@@ -30,16 +31,18 @@ def send_to_telegram():
         
         # Форматируем телефон (убираем пробелы и дефисы)
         phone_clean = phone.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
-        
+
         # Формируем сообщение для Telegram
-        current_time = datetime.now().strftime('%d.%m.%Y %H:%M')
-        
+        utc_now = datetime.utcnow()
+        current_time_utc5 = utc_now + timedelta(hours=5)
+        current_time = current_time_utc5.strftime('%d.%m.%Y %H:%M')
+
         text = f"🚚 *Новая заявка на грузоперевозку*\n\n"
         text += f"👤 *Имя:* {name}\n"
         text += f"📞 *Телефон:* {phone_clean}\n"
         text += f"📦 *Описание груза:* {message}\n"
         text += f"⏰ *Время заявки:* {current_time}\n"
-        text += f"\n📍 *Источник:* Сайт gazel-perevozki.ru"
+        text += f"\n📍 *Источник:* Сайт {SITE_NAME}"
         
         # Отправляем в Telegram
         url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
