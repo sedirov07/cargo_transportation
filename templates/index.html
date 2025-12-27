@@ -3,9 +3,9 @@
   <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Грузоперевозки на Газели в Екатеринбурге и области | Частный перевозчик</title>
-      <meta name="description" content="Грузоперевозки на ГАЗели NEXT 4,2м по Екатеринбургу и области. Квартирные переезды, перевозка мебели и техники. Фиксированная цена от 450₽/час. Частный перевозчик без посредников.">
-      <meta name="keywords" content="грузоперевозки Екатеринбург, Газель переезд, квартирный переезд, перевозка мебели, Газель NEXT, грузчики Екатеринбург">
+      <title>Грузоперевозки на Газели в Екатеринбурге, области и России | Частный перевозчик</title>
+      <meta name="description" content="Грузоперевозки по Екатеринбургу, области и России. Квартирные переезды, перевозка мебели и техники. Фиксированная цена от 450₽/час. Частный перевозчик без посредников.">
+      <meta name="keywords" content="грузоперевозки, грузоперевозки Екатеринбург, грузоперевозки Свердловская область, переезд, Газель переезд, квартирный переезд, перевозка мебели, перевозка техники, междугородние перевозки, перевозка пианино, перевозка мебели Екатеринбург, грузоперевозки Россия, транспортные услуги, дачные перевозки, логистика, перевозка стройматериалов, попутный груз">
       
       <!-- Tailwind CSS -->
       <script src="https://cdn.tailwindcss.com"></script>
@@ -346,43 +346,86 @@
                       <span class="font-semibold text-gray-800 block">Газель-Перевозки</span>
                   </div>
               </div>
-              <a href="tel:+79506543210" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition">
-                  +7 (950) 654-32-10
+              <a href="tel:+79226141249" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition">
+                  +7 (922) 614-12-49
               </a>
           </div>
       </header>
 
       <!-- Hero -->
-      <section class="hero-gradient text-white">
-          <div class="container mx-auto px-4 py-16">
-              <div class="max-w-3xl">
-                  <div class="flex flex-wrap items-center gap-2 mb-4">
-                      <span class="inline-block bg-white/20 backdrop-blur-sm text-sm font-medium px-3 py-1 rounded-full">
-                          Частный перевозчик • Без посредников
-                      </span>
-                      <span class="inline-block bg-green-500/20 backdrop-blur-sm text-sm font-medium px-3 py-1 rounded-full">
-                          Документы проверены
-                      </span>
-                  </div>
-                  <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-6">
-                      Грузоперевозки<br>
-                      <span class="text-blue-100">в Екатеринбурге и Свердловской области</span>
-                  </h1>
-                  <p class="text-xl text-blue-100 mb-8 max-w-2xl">
-                      Квартирные и дачные переезды, перевозка мебели и техники до 1,5 тонн. 
-                      Фиксированная цена, аккуратность и пунктуальность.
-                  </p>
-                  <div class="flex flex-wrap gap-4">
-                      <a href="#contact" class="bg-white text-blue-600 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition">
-                          Рассчитать стоимость
-                      </a>
-                      <a href="https://t.me/+79506543210" class="bg-white/20 backdrop-blur-sm font-medium px-6 py-3 rounded-lg hover:bg-white/30 transition">
-                          Написать в Telegram
-                      </a>
-                  </div>
-              </div>
-          </div>
-      </section>
+    <section class="hero-gradient text-white">
+        <div class="container mx-auto px-4 py-16">
+            <div class="flex flex-col md:flex-row justify-between items-start gap-8">
+                <!-- Левый блок -->
+                <div class="md:w-1/2">
+                    <div class="flex flex-wrap items-center gap-2 mb-4">
+                        <span class="inline-block bg-white/20 backdrop-blur-sm text-sm font-medium px-3 py-1 rounded-full">
+                            Частный перевозчик • Без посредников
+                        </span>
+                        <span class="inline-block bg-green-500/20 backdrop-blur-sm text-sm font-medium px-3 py-1 rounded-full">
+                            Документы проверены
+                        </span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-6">
+                        Грузоперевозки<br>
+                        <span>в Екатеринбурге, Свердловской области и Росссии</span>
+                    </h1>
+                    <p class="text-xl text-blue-100 mb-8 max-w-2xl">
+                        Квартирные и дачные переезды, перевозка мебели и техники до 1,5 тонн. 
+                        Фиксированная цена, аккуратность и пунктуальность.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#contact" class="bg-white text-blue-600 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition">
+                            Рассчитать стоимость
+                        </a>
+                        <a href="https://t.me/+79226141249" class="bg-white/20 backdrop-blur-sm font-medium px-6 py-3 rounded-lg hover:bg-white/30 transition inline-flex items-center">
+                            <img src="{{ url_for('static', filename='icons/telegram.svg') }}" alt="Telegram" class="w-5 h-5 mr-2" loading="lazy" />
+                            Написать
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Reviews card -->
+                <div class="md:w-auto">
+                    <div class="bg-white/10 p-6 rounded-2xl backdrop-blur-sm max-w-md w-full">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <p class="text-sm text-blue-100">Рейтинг</p>
+                                <div class="flex items-center mt-1">
+                                    <!-- 5 stars -->
+                                    <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.173c.969 0 1.371 1.24.588 1.81l-3.377 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118L10 15.347l-3.377 2.455c-.785.57-1.84-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.629 9.393c-.783-.57-.38-1.81.588-1.81h4.173a1 1 0 00.95-.69L9.05 2.927z"/></svg>
+                                    <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.173c.969 0 1.371 1.24.588 1.81l-3.377 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118L10 15.347l-3.377 2.455c-.785.57-1.84-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.629 9.393c-.783-.57-.38-1.81.588-1.81h4.173a1 1 0 00.95-.69L9.05 2.927z"/></svg>
+                                    <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.173c.969 0 1.371 1.24.588 1.81l-3.377 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118L10 15.347l-3.377 2.455c-.785.57-1.84-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.629 9.393c-.783-.57-.38-1.81.588-1.81h4.173a1 1 0 00.95-.69L9.05 2.927z"/></svg>
+                                    <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.173c.969 0 1.371 1.24.588 1.81l-3.377 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118L10 15.347l-3.377 2.455c-.785.57-1.84-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.629 9.393c-.783-.57-.38-1.81.588-1.81h4.173a1 1 0 00.95-.69L9.05 2.927z"/></svg>
+                                    <svg class="w-5 h-5 text-yellow-400 opacity-80" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.173c.969 0 1.371 1.24.588 1.81l-3.377 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118L10 15.347l-3.377 2.455c-.785.57-1.84-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.629 9.393c-.783-.57-.38-1.81.588-1.81h4.173a1 1 0 00.95-.69L9.05 2.927z"/></svg>
+                                    <span class="ml-3 text-sm text-blue-100">4.8 (<a href="https://www.avito.ru/ekaterinburg/predlozheniya_uslug/gruzoperevozki_gazel_42m._po_gorodu_po_rossii_1799388373#open-reviews-list" target="_blank" rel="noopener noreferrer" class="underline">26 отзывов</a>)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="text-sm text-blue-100">
+                                <p class="font-bold">Татьяна</p>
+                                <p class="text-xs">Обратилась по поводу переезда из области в город. Все было во время и быстро. Цена удивила,не завышена! Профессионалы своего дела! Рекомендую ещё воспользуюсь.</p>
+                            </div>
+                            <div class="text-sm text-blue-100">
+                                <p class="font-bold">Ольга</p>
+                                <p class="text-xs">Благодарю за оперативное реагирование и качественное выполнение работы</p>
+                            </div>
+                            <div class="text-sm text-blue-100">
+                                <p class="font-bold">Кристина Анатольевна</p>
+                                <p class="text-xs">Договорились о перевозке дивана по городу. Водитель приехал точно к назначенному времени, всё было сделано быстро, чётко. Стоимость ниже, чем у других перевозчиков. Спасибо! При необходимости обязательно ещё раз обращусь.</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-center">
+                            <a href="https://www.avito.ru/ekaterinburg/predlozheniya_uslug/gruzoperevozki_gazel_42m._po_gorodu_po_rossii_1799388373#open-reviews-list" target="_blank" rel="noopener noreferrer" class="inline-block bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold">Читать все отзывы на Avito</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
       <!-- Location & Rating -->
       <section class="py-8 bg-white border-b">
@@ -524,7 +567,7 @@
                       </div>
                       <div class="mt-6 p-4 bg-blue-50 rounded-lg">
                           <p class="text-sm text-blue-700">
-                              <strong>Цена обсуждается индивидуально!</strong> Звоните — договоримся!
+                              <strong>Цена обсуждается индивидуально!</strong><a href="tel:+79226141249"> Звоните </a>— договоримся!
                           </p>
                       </div>
                   </div>
@@ -1221,14 +1264,14 @@
                   
                   <div class="mt-12 pt-8 border-t border-gray-200 text-center">
                       <p class="font-medium mb-2">Или свяжитесь напрямую:</p>
-                      <a href="tel:+79506543210" class="text-blue-600 font-semibold text-xl hover:text-blue-700">
-                          +7 (950) 654-32-10
+                      <a href="tel:+79226141249" class="text-blue-600 font-semibold text-xl hover:text-blue-700">
+                          +7 (922) 614-12-49
                       </a>
-                      <p class="mt-1">
-                          <a href="https://t.me/+79506543210" class="text-gray-600 hover:text-gray-800">
-                              Telegram
-                          </a>
-                      </p>
+                        <p class="mt-1">
+                            <a href="https://t.me/+79226141249" class="text-gray-600 hover:text-gray-800 inline-flex items-center justify-center" aria-label="Перейти в Telegram" title="Перейти в Telegram" target="_blank" rel="noopener noreferrer">
+                                <img src="{{ url_for('static', filename='icons/telegram.svg') }}" alt="Telegram" class="w-9 h-9" loading="lazy" />
+                            </a>
+                        </p>
                   </div>
               </div>
           </div>
@@ -1238,10 +1281,10 @@
       <footer class="bg-gray-900 text-white py-8">
           <div class="container mx-auto px-4 text-center">
               <div class="mb-4">
-                  <p class="text-gray-400">Грузоперевозки Газель 4,2м. По городу, по России</p>
+                  <p class="text-gray-400">Грузоперевозки. По городу, по области и по России</p>
                   <p class="text-gray-400">Свердловская обл., Екатеринбург, ул. Ильича</p>
               </div>
-              <p class="text-gray-400">© 2025 Частные грузоперевозки на Газели. Екатеринбург и Свердловская область.</p>
+              <p class="text-gray-400">© 2025 Частные грузоперевозки. Екатеринбург, Свердловская область и Россия.</p>
               <p class="text-gray-500 text-sm mt-2">Работаю официально, есть все необходимые документы</p>
           </div>
       </footer>
