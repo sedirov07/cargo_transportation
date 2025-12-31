@@ -7,6 +7,26 @@
       <meta name="description" content="Грузоперевозки по Екатеринбургу, области и России. Квартирные переезды, перевозка мебели и техники. Фиксированная цена от 450₽/час. Частный перевозчик без посредников.">
       <meta name="keywords" content="грузоперевозки, грузоперевозки Екатеринбург, грузоперевозки Свердловская область, переезд, Газель переезд, квартирный переезд, перевозка мебели, перевозка техники, междугородние перевозки, перевозка пианино, перевозка мебели Екатеринбург, грузоперевозки Россия, транспортные услуги, дачные перевозки, логистика, перевозка стройматериалов, попутный груз">
       
+      <!-- Yandex.Metrika counter -->
+      <script type="text/javascript">
+          (function(m,e,t,r,i,k,a){
+              m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+              m[i].l=1*new Date();
+              for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+              k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+          })(window, document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
+
+          ym(106091724, 'init', {
+              clickmap:true,
+              trackLinks:true,
+              accurateTrackBounce:true,
+              webvisor:true,
+              ecommerce:"dataLayer"
+          });
+      </script>
+      <noscript><div><img src="https://mc.yandex.ru/watch/106091724" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+      <!-- /Yandex.Metrika counter -->
+      
       <!-- Tailwind CSS -->
       <script src="https://cdn.tailwindcss.com"></script>
       <style>
@@ -1229,6 +1249,27 @@
                                 const data = await response.json();
                                 
                                 if (data.ok) {
+                                  // ОТПРАВКА СОБЫТИЯ В ЯНДЕКС.МЕТРИКУ
+                                  if (typeof ym !== 'undefined') {
+                                      ym(106091724, 'reachGoal', 'form_submit', {
+                                          formName: 'contact_form',
+                                          userName: name,
+                                          userPhone: phone
+                                      });
+                                      
+                                      // Также можно отправить как событие ecommerce
+                                      try {
+                                          ym(106091724, 'ecommerce', 'add', {
+                                              id: Date.now().toString(),
+                                              name: 'Заявка на перевозку',
+                                              category: 'Заявка',
+                                              price: 0,
+                                              quantity: 1
+                                          });
+                                      } catch(e) {
+                                          console.log('Ecommerce error:', e);
+                                      }
+                                  }
                                     // Используем имя пользователя в сообщении об успехе
                                     // Делаем первую букву заглавной
                                     const formattedName = name.split(' ')[0];
@@ -1303,5 +1344,38 @@
                     });
                 });
             </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          // Отслеживание кликов по телефону
+          document.querySelectorAll('a[href^="tel:"]').forEach(function(link) {
+              link.addEventListener('click', function() {
+                  if (typeof ym !== 'undefined') {
+                      ym(106091724, 'reachGoal', 'phone_click');
+                  }
+              });
+          });
+          
+          // Отслеживание кликов по Telegram
+          document.querySelectorAll('a[href*="t.me"]').forEach(function(link) {
+              link.addEventListener('click', function() {
+                  if (typeof ym !== 'undefined') {
+                      ym(106091724, 'reachGoal', 'telegram_click');
+                  }
+              });
+          });
+          
+          // Отслеживание просмотра слайдера
+          const sliderContainer = document.querySelector('.slider-container');
+          if (sliderContainer) {
+              sliderContainer.addEventListener('click', function(e) {
+                  if (e.target.closest('.slider-slide')) {
+                      if (typeof ym !== 'undefined') {
+                          ym(106091724, 'reachGoal', 'gallery_view');
+                      }
+                  }
+              });
+          }
+      });
+    </script>
   </body>
 </html>
