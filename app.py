@@ -3,11 +3,14 @@ import requests
 import os
 import threading
 import time
+import logging
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 
 app = Flask(__name__)
+logger = logging.getLogger('werkzeug')
+logger.setLevel(logging.INFO)  # Отключаем логирование запросов в консоль
 
 load_dotenv()
 # Настройки для отправки в Telegram
@@ -28,16 +31,16 @@ def keep_alive_ping():
             
             current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             if response.status_code == 200:
-                print(f"[{current_time}] ✅ Самопинг успешен: {response.status_code}")
+                logger.info(f"[{current_time}] ✅ Самопинг успешен: {response.status_code}")
             else:
-                print(f"[{current_time}] ⚠️ Самопинг с ошибкой: {response.status_code}")
+                logger.warning(f"[{current_time}] ⚠️ Самопинг с ошибкой: {response.status_code}")
                 
         except requests.exceptions.RequestException as e:
             current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            print(f"[{current_time}] ❌ Ошибка самопинга: {str(e)}")
+            logger.error(f"[{current_time}] ❌ Ошибка самопинга: {str(e)}")
         except Exception as e:
             current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            print(f"[{current_time}] ❌ Неизвестная ошибка самопинга: {str(e)}")
+            logger.error(f"[{current_time}] ❌ Неизвестная ошибка самопинга: {str(e)}")
         
         # Ждем указанный интервал перед следующим пингом
         time.sleep(ping_interval)
@@ -50,10 +53,9 @@ def start_keep_alive():
         try:
             ping_thread = threading.Thread(target=keep_alive_ping, daemon=True)
             ping_thread.start()
-            print("🚀 Самопинг запущен для поддержания активности на Render")
+            logger.info("🚀 Самопинг запущен для поддержания активности на Render")
         except Exception as e:
-            print(f"❌ Не удалось запустить самопинг: {str(e)}")
-
+            logger.error(f"❌ Не удалось запустить самопинг: {str(e)}")
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -98,11 +100,11 @@ def send_to_telegram():
         
         if response.status_code == 200:
             # Логируем успешную отправку
-            print(f"[{current_time}] Заявка отправлена: {name}, {phone_clean}")
+            logger.info(f"[{current_time}] Заявка отправлена: {name}, {phone_clean}")
             return jsonify({'ok': True, 'message': 'Заявка отправлена!'})
         else:
             error_msg = f"Ошибка Telegram API: {response.status_code}"
-            print(f"[{current_time}] {error_msg}")
+            logger.error(f"[{current_time}] {error_msg}")
             return jsonify({'ok': False, 'error': error_msg})
             
     except requests.exceptions.Timeout:
@@ -111,7 +113,7 @@ def send_to_telegram():
         return jsonify({'ok': False, 'error': 'Ошибка подключения к Telegram'})
     except Exception as e:
         error_msg = f"Неизвестная ошибка: {str(e)}"
-        print(f"[{datetime.now()}] {error_msg}")
+        logger.error(f"[{datetime.now()}] {error_msg}")
         return jsonify({'ok': False, 'error': 'Внутренняя ошибка сервера'})
 
 # Опционально: для обслуживания статических файлов
@@ -156,8 +158,8 @@ if __name__ == '__main__':
     
     # Проверяем, есть ли переменные окружения для Telegram
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        print("⚠️ ВНИМАНИЕ: TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID не установлены!")
-        print("⚠️ Отправка заявок в Telegram будет недоступна.")
+        logger.warning("⚠️ ВНИМАНИЕ: TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID не установлены!")
+        logger.warning("⚠️ Отправка заявок в Telegram будет недоступна.")
     
     # Определяем режим запуска
     debug_mode = os.environ.get('FLASK_ENV') == 'development' or os.environ.get('DEBUG') == 'True'
