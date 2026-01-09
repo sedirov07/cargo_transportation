@@ -1256,19 +1256,6 @@
                                           userName: name,
                                           userPhone: phone
                                       });
-                                      
-                                      // Также можно отправить как событие ecommerce
-                                      try {
-                                          ym(106091724, 'ecommerce', 'add', {
-                                              id: Date.now().toString(),
-                                              name: 'Заявка на перевозку',
-                                              category: 'Заявка',
-                                              price: 0,
-                                              quantity: 1
-                                          });
-                                      } catch(e) {
-                                          console.log('Ecommerce error:', e);
-                                      }
                                   }
                                     // Используем имя пользователя в сообщении об успехе
                                     // Делаем первую букву заглавной
@@ -1363,18 +1350,6 @@
                   }
               });
           });
-          
-          // Отслеживание просмотра слайдера
-          const sliderContainer = document.querySelector('.slider-container');
-          if (sliderContainer) {
-              sliderContainer.addEventListener('click', function(e) {
-                  if (e.target.closest('.slider-slide')) {
-                      if (typeof ym !== 'undefined') {
-                          ym(106091724, 'reachGoal', 'gallery_view');
-                      }
-                  }
-              });
-          }
       });
     </script>
   </body>
