@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory
 import requests
 import os
+import threading
+import time
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
@@ -12,6 +14,45 @@ load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 SITE_NAME = os.getenv('SITE_NAME', '')
+
+# Функция для самопинга
+def keep_alive_ping():
+    """Периодически отправляет запросы к приложению для поддержания активности"""
+    ping_interval = 300  # 5 минут (минимальный интервал для бесплатного плана)
+    
+    while True:
+        try:
+            # Отправляем GET запрос к своему же приложению
+            ping_url = f"{SITE_NAME.rstrip('/')}/ping"
+            response = requests.get(ping_url, timeout=10)
+            
+            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            if response.status_code == 200:
+                print(f"[{current_time}] ✅ Самопинг успешен: {response.status_code}")
+            else:
+                print(f"[{current_time}] ⚠️ Самопинг с ошибкой: {response.status_code}")
+                
+        except requests.exceptions.RequestException as e:
+            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            print(f"[{current_time}] ❌ Ошибка самопинга: {str(e)}")
+        except Exception as e:
+            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            print(f"[{current_time}] ❌ Неизвестная ошибка самопинга: {str(e)}")
+        
+        # Ждем указанный интервал перед следующим пингом
+        time.sleep(ping_interval)
+
+# Запускаем самопинг в отдельном потоке при старте приложения
+def start_keep_alive():
+    """Запускает поток с самопингом"""
+    # Не запускаем самопинг в режиме разработки (debug=True)
+    if os.environ.get('FLASK_ENV') != 'development' and os.environ.get('DEBUG') != 'True':
+        try:
+            ping_thread = threading.Thread(target=keep_alive_ping, daemon=True)
+            ping_thread.start()
+            print("🚀 Самопинг запущен для поддержания активности на Render")
+        except Exception as e:
+            print(f"❌ Не удалось запустить самопинг: {str(e)}")
 
 @app.route('/')
 def index():
@@ -108,14 +149,23 @@ def sitemap():
 </urlset>"""
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    # Настройки для разработки
-    # app.run(
-    #     host='0.0.0.0',
-    #     port=8000,
-    #     debug=True,
-    #     threaded=True
-    # )
+    # Запускаем самопинг перед стартом приложения
+    start_keep_alive()
     
-    # Для продакшена:
-    app.run(host='0.0.0.0', port=port, debug=False)
+    port = int(os.environ.get('PORT', 5000))
+    
+    # Проверяем, есть ли переменные окружения для Telegram
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        print("⚠️ ВНИМАНИЕ: TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID не установлены!")
+        print("⚠️ Отправка заявок в Telegram будет недоступна.")
+    
+    # Определяем режим запуска
+    debug_mode = os.environ.get('FLASK_ENV') == 'development' or os.environ.get('DEBUG') == 'True'
+    
+    # Настройки для продакшена
+    app.run(
+        host='0.0.0.0',
+        port=port,
+        debug=debug_mode,
+        threaded=True  # Разрешаем многопоточность
+    )
