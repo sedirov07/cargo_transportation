@@ -7,55 +7,88 @@ import logging
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
+# Загружаем переменные окружения
+load_dotenv()
+
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
+
+# Уменьшаем уровень логирования для werkzeug (HTTP запросы Flask)
+logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
 app = Flask(__name__)
-logger = logging.getLogger('werkzeug')
-logger.setLevel(logging.INFO)  # Отключаем логирование запросов в консоль
 
-load_dotenv()
 # Настройки для отправки в Telegram
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 SITE_NAME = os.getenv('SITE_NAME', '')
 
-# Функция для самопинга
+# Флаг для предотвращения повторного запуска самопинга
+_keep_alive_started = False
+_keep_alive_lock = threading.Lock()
+
+
 def keep_alive_ping():
     """Периодически отправляет запросы к приложению для поддержания активности"""
-    ping_interval = 300  # 5 минут (минимальный интервал для бесплатного плана)
+    ping_interval = 840  # 14 минут (безопасный интервал для 15-минутного таймаута)
+    
+    # Ждём 60 секунд перед первым пингом, чтобы приложение успело запуститься
+    time.sleep(60)
     
     while True:
         try:
+            if not SITE_NAME:
+                logger.warning("⚠️ SITE_NAME не установлен, самопинг невозможен")
+                time.sleep(ping_interval)
+                continue
+                
             # Отправляем GET запрос к своему же приложению
             ping_url = f"{SITE_NAME.rstrip('/')}/ping"
-            response = requests.get(ping_url, timeout=10)
+            response = requests.get(ping_url, timeout=30)
             
-            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             if response.status_code == 200:
-                logger.info(f"[{current_time}] ✅ Самопинг успешен: {response.status_code}")
+                logger.info(f"✅ Самопинг успешен: {ping_url}")
             else:
-                logger.warning(f"[{current_time}] ⚠️ Самопинг с ошибкой: {response.status_code}")
+                logger.warning(f"⚠️ Самопинг с ошибкой: {response.status_code}")
                 
         except requests.exceptions.RequestException as e:
-            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            logger.error(f"[{current_time}] ❌ Ошибка самопинга: {str(e)}")
+            logger.error(f"❌ Ошибка самопинга: {str(e)}")
         except Exception as e:
-            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            logger.error(f"[{current_time}] ❌ Неизвестная ошибка самопинга: {str(e)}")
+            logger.error(f"❌ Неизвестная ошибка самопинга: {str(e)}")
         
         # Ждем указанный интервал перед следующим пингом
         time.sleep(ping_interval)
 
-# Запускаем самопинг в отдельном потоке при старте приложения
+
 def start_keep_alive():
-    """Запускает поток с самопингом"""
-    # Не запускаем самопинг в режиме разработки (debug=True)
-    if os.environ.get('FLASK_ENV') != 'development' and os.environ.get('DEBUG') != 'True':
+    """Запускает поток с самопингом (с защитой от повторного запуска)"""
+    global _keep_alive_started
+    
+    with _keep_alive_lock:
+        if _keep_alive_started:
+            return
+        
+        # Не запускаем самопинг в режиме разработки
+        if os.environ.get('FLASK_ENV') == 'development' or os.environ.get('DEBUG') == 'True':
+            logger.info("🔧 Режим разработки: самопинг отключён")
+            return
+            
         try:
             ping_thread = threading.Thread(target=keep_alive_ping, daemon=True)
             ping_thread.start()
+            _keep_alive_started = True
             logger.info("🚀 Самопинг запущен для поддержания активности на Render")
         except Exception as e:
             logger.error(f"❌ Не удалось запустить самопинг: {str(e)}")
+
+
+# Запускаем самопинг при импорте модуля (работает с Gunicorn!)
+start_keep_alive()
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -151,9 +184,6 @@ def sitemap():
 </urlset>"""
 
 if __name__ == '__main__':
-    # Запускаем самопинг перед стартом приложения
-    start_keep_alive()
-    
     port = int(os.environ.get('PORT', 5000))
     
     # Проверяем, есть ли переменные окружения для Telegram
