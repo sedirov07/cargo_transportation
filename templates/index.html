@@ -465,7 +465,7 @@
                           <span class="text-blue-600">🚚</span>
                       </div>
                       <div>
-                          <p class="font-medium">Близко к вам</p>
+                          <p class="font-medium">Близко к Вам</p>
                           <p class="text-sm text-gray-600">Выезд по городу за 15-20 мин</p>
                       </div>
                   </div>
@@ -502,7 +502,7 @@
                       </div>
                       <h3 class="text-xl font-semibold mb-3">Пунктуальность</h3>
                       <p class="text-gray-600">
-                          Приезжаю точно в оговоренное время. Ценю ваше время и планирование.
+                          Приезжаю точно в оговоренное время. Ценю Ваше время и планирование.
                       </p>
                   </div>
               </div>
@@ -689,6 +689,65 @@
                       <div class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">4</div>
                       <h3 class="font-semibold mb-2">Вы платите</h3>
                       <p class="text-sm text-gray-600">Оплата после выполнения работы</p>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Guarantees -->
+      <section class="py-16 bg-white">
+          <div class="container mx-auto px-4">
+              <h2 class="text-3xl font-bold text-center mb-4">Мои гарантии</h2>
+              <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">Работаю честно и открыто. Вот что я гарантирую каждому клиенту:</p>
+              
+              <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl border border-green-200 text-center">
+                      <div class="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <span class="text-white text-2xl">💰</span>
+                      </div>
+                      <h3 class="font-semibold text-lg mb-2">Оплата после разгрузки</h3>
+                      <p class="text-gray-600 text-sm">Платите только когда груз доставлен и вы всё проверили</p>
+                  </div>
+                  
+                  <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl border border-blue-200 text-center">
+                      <div class="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <span class="text-white text-2xl">🛡️</span>
+                      </div>
+                      <h3 class="font-semibold text-lg mb-2">Сохранность груза</h3>
+                      <p class="text-gray-600 text-sm">Бережная погрузка, фиксация и аккуратная перевозка. Отвечаю за целостность</p>
+                  </div>
+                  
+                  <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-2xl border border-purple-200 text-center">
+                      <div class="w-14 h-14 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <span class="text-white text-2xl">📋</span>
+                      </div>
+                      <h3 class="font-semibold text-lg mb-2">Без скрытых доплат</h3>
+                      <p class="text-gray-600 text-sm">Называю цену сразу — без накруток, «бензина» и неожиданных расходов</p>
+                  </div>
+                  
+                  <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-2xl border border-orange-200 text-center">
+                      <div class="w-14 h-14 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <span class="text-white text-2xl">⏰</span>
+                      </div>
+                      <h3 class="font-semibold text-lg mb-2">Точное время</h3>
+                      <p class="text-gray-600 text-sm">Приеду вовремя или предупрежу заранее. Ценю Ваше время</p>
+                  </div>
+              </div>
+              
+              <div class="mt-10 bg-gray-50 rounded-2xl p-6 md:p-8">
+                  <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                      <div class="flex items-center gap-4">
+                          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                              <span class="text-green-600 text-3xl">✓</span>
+                          </div>
+                          <div>
+                              <h4 class="font-semibold text-lg">Чистый транспорт — всегда</h4>
+                              <p class="text-gray-600 text-sm">Перед каждым заказом машина убирается. Могу прислать фото кузова до выезда</p>
+                          </div>
+                      </div>
+                      <a href="#contact" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition whitespace-nowrap">
+                          Оставить заявку
+                      </a>
                   </div>
               </div>
           </div>
@@ -1132,23 +1191,26 @@
                   </p>
                   
                   <form id="contact-form" class="space-y-6">
-                      <div>
+                      <div class="relative">
                           <label class="block text-sm font-medium text-gray-700 mb-2">Ваше имя *</label>
-                          <input type="text" name="name" required 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                          <input type="text" name="name" id="name-input" required 
+                                class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                                 placeholder="Иван Иванов">
+                          <span id="name-check" class="absolute right-3 top-10 text-green-500 hidden">✓</span>
                       </div>
-                      <div>
+                      <div class="relative">
                           <label class="block text-sm font-medium text-gray-700 mb-2">Телефон *</label>
                           <input type="tel" name="phone" id="phone-input" required 
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                                 placeholder="+7 (999) 123-45-67">
+                          <span id="phone-check" class="absolute right-3 top-10 text-green-500 hidden">✓</span>
                       </div>
-                      <div>
+                      <div class="relative">
                           <label class="block text-sm font-medium text-gray-700 mb-2">Что и куда перевезти?</label>
-                          <textarea name="message" rows="4" required maxlength="1000"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                          <textarea name="message" id="message-input" rows="4" required maxlength="1000"
+                                    class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                                     placeholder="Например: переезд из 2-комнатной квартиры с 3 этажа на 5 этаж, адреса..."></textarea>
+                          <span id="message-check" class="absolute right-3 top-12 text-green-500 hidden">✓</span>
                       </div>
                       <button type="submit" id="submit-btn" disabled class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
                           Отправить заявку
@@ -1215,9 +1277,29 @@
                   document.addEventListener('DOMContentLoaded', function() {
                       const form = document.getElementById('contact-form');
                       const submitBtn = document.getElementById('submit-btn');
-                      const nameInput = form.querySelector('[name="name"]');
-                      const phoneInput = form.querySelector('[name="phone"]');
-                      const messageInput = form.querySelector('[name="message"]');
+                      const nameInput = document.getElementById('name-input');
+                      const phoneInput = document.getElementById('phone-input');
+                      const messageInput = document.getElementById('message-input');
+                      
+                      // Элементы галочек
+                      const nameCheck = document.getElementById('name-check');
+                      const phoneCheck = document.getElementById('phone-check');
+                      const messageCheck = document.getElementById('message-check');
+                      
+                      function updateFieldStatus(input, checkMark, isValid, hasValue) {
+                          if (isValid) {
+                              input.classList.remove('border-red-400');
+                              input.classList.add('border-green-400');
+                              checkMark.classList.remove('hidden');
+                          } else if (hasValue) {
+                              input.classList.remove('border-green-400');
+                              input.classList.add('border-red-400');
+                              checkMark.classList.add('hidden');
+                          } else {
+                              input.classList.remove('border-green-400', 'border-red-400');
+                              checkMark.classList.add('hidden');
+                          }
+                      }
                       
                       function validateForm() {
                           const name = nameInput.value.trim();
@@ -1229,6 +1311,11 @@
                           const isNameValid = name.length >= 2;
                           const isPhoneValid = phoneDigits.length >= 11; // +7 и 10 цифр номера
                           const isMessageValid = message.length >= 1;
+                          
+                          // Визуальная обратная связь для каждого поля
+                          updateFieldStatus(nameInput, nameCheck, isNameValid, name.length > 0);
+                          updateFieldStatus(phoneInput, phoneCheck, isPhoneValid, phoneDigits.length > 1);
+                          updateFieldStatus(messageInput, messageCheck, isMessageValid, message.length > 0);
                           
                           // Активируем кнопку только если все поля валидны
                           if (isNameValid && isPhoneValid && isMessageValid) {
