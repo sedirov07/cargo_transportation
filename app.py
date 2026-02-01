@@ -52,7 +52,8 @@ def keep_alive_ping():
             response = requests.get(ping_url, timeout=30)
             
             if response.status_code == 200:
-                logger.info(f"✅ Самопинг успешен: {ping_url}")
+                # logger.info(f"✅ Самопинг успешен: {ping_url}")
+                pass
             else:
                 logger.warning(f"⚠️ Самопинг с ошибкой: {response.status_code}")
                 

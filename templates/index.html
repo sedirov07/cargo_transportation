@@ -1150,7 +1150,7 @@
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                     placeholder="Например: переезд из 2-комнатной квартиры с 3 этажа на 5 этаж, адреса..."></textarea>
                       </div>
-                      <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">
+                      <button type="submit" id="submit-btn" disabled class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
                           Отправить заявку
                       </button>
                       <p class="text-xs text-gray-500 text-center">
@@ -1211,6 +1211,42 @@
                       });
                   });
                   
+                  // Валидация формы в реальном времени - кнопка активна только при валидных данных
+                  document.addEventListener('DOMContentLoaded', function() {
+                      const form = document.getElementById('contact-form');
+                      const submitBtn = document.getElementById('submit-btn');
+                      const nameInput = form.querySelector('[name="name"]');
+                      const phoneInput = form.querySelector('[name="phone"]');
+                      const messageInput = form.querySelector('[name="message"]');
+                      
+                      function validateForm() {
+                          const name = nameInput.value.trim();
+                          const phone = phoneInput.value.trim();
+                          const message = messageInput.value.trim();
+                          const phoneDigits = phone.replace(/\D/g, '');
+                          
+                          // Проверяем все условия валидности
+                          const isNameValid = name.length >= 2;
+                          const isPhoneValid = phoneDigits.length >= 11; // +7 и 10 цифр номера
+                          const isMessageValid = message.length >= 1;
+                          
+                          // Активируем кнопку только если все поля валидны
+                          if (isNameValid && isPhoneValid && isMessageValid) {
+                              submitBtn.disabled = false;
+                          } else {
+                              submitBtn.disabled = true;
+                          }
+                      }
+                      
+                      // Слушаем изменения во всех полях формы
+                      nameInput.addEventListener('input', validateForm);
+                      phoneInput.addEventListener('input', validateForm);
+                      messageInput.addEventListener('input', validateForm);
+                      
+                      // Начальная проверка
+                      validateForm();
+                  });
+                  
                   // AJAX отправка формы на Flask-сервер
                     document.addEventListener('DOMContentLoaded', function() {
                         const form = document.getElementById('contact-form');
@@ -1223,18 +1259,8 @@
                             const name = nameInput.value.trim();
                             const phone = phoneInput.value.trim();
                             
-                            if (!name || name.length < 2) {
-                                alert('Пожалуйста, введите ваше имя');
-                                return;
-                            }
-                            
-                            if (!phone || phone.length < 10) {
-                                alert('Пожалуйста, введите корректный номер телефона');
-                                return;
-                            }
-                            
                             const formData = new FormData(this);
-                            const submitBtn = this.querySelector('button[type="submit"]');
+                            const submitBtn = document.getElementById('submit-btn');
                             const originalText = submitBtn.textContent;
                             
                             submitBtn.textContent = 'Отправляем...';
