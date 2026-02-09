@@ -27,10 +27,14 @@
       <noscript><div><img src="https://mc.yandex.ru/watch/106091724" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
       <!-- /Yandex.Metrika counter -->
       
+      <!-- Google Fonts -->
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+      
       <!-- Tailwind CSS -->
       <script src="https://cdn.tailwindcss.com"></script>
       <style>
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
           body { font-family: 'Inter', sans-serif; }
           .hero-gradient { background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%); }
           .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
@@ -46,27 +50,44 @@
               overflow: hidden;
               border-radius: 1rem;
               height: 500px; /* Фиксированная высота для десктопа */
+              touch-action: pan-y;
+              -webkit-touch-callout: none;
           }
           
           .slider-track {
+              display: -webkit-box;
+              display: -webkit-flex;
               display: flex;
-              transition: transform 1s ease-in-out;
+              -webkit-transition: -webkit-transform 0.4s ease-out;
+              transition: transform 0.4s ease-out;
               height: 100%;
+              will-change: transform;
+          }
+          
+          .slider-track.dragging {
+              -webkit-transition: none;
+              transition: none;
           }
           
           .slider-slide {
               min-width: 100%;
               position: relative;
               height: 100%;
+              -webkit-flex-shrink: 0;
               flex-shrink: 0;
               cursor: pointer;
+              -webkit-user-select: none;
+              user-select: none;
           }
           
           .slider-slide img {
               width: 100%;
               height: 100%;
+              -o-object-fit: cover;
               object-fit: cover;
+              -webkit-transition: -webkit-transform 0.7s ease;
               transition: transform 0.7s ease;
+              pointer-events: none;
           }
           
           .slider-slide img.loaded {
@@ -97,31 +118,43 @@
           
           .slider-dot:hover {
               background-color: rgba(255, 255, 255, 0.8);
+              -webkit-transform: scale(1.2);
               transform: scale(1.2);
           }
           
           .slider-dot.active {
               background-color: #3b82f6;
+              -webkit-transform: scale(1.3);
               transform: scale(1.3);
               border-color: white;
+              -webkit-box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
               box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
           }
           
           .slider-btn {
               position: absolute;
               top: 50%;
+              -webkit-transform: translateY(-50%);
               transform: translateY(-50%);
               background: rgba(255, 255, 255, 0.9);
               border: none;
               width: 3rem;
               height: 3rem;
               border-radius: 50%;
+              display: -webkit-box;
+              display: -webkit-flex;
               display: flex;
+              -webkit-box-align: center;
+              -webkit-align-items: center;
               align-items: center;
+              -webkit-box-pack: center;
+              -webkit-justify-content: center;
               justify-content: center;
               cursor: pointer;
+              -webkit-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
               z-index: 20;
+              -webkit-transition: all 0.3s;
               transition: all 0.3s;
           }
           
@@ -256,11 +289,13 @@
               justify-content: center;
               cursor: pointer;
               transition: all 0.3s;
+              -webkit-backdrop-filter: blur(10px);
               backdrop-filter: blur(10px);
           }
 
           .modal-close:hover {
               background: rgba(255, 255, 255, 0.2);
+              -webkit-transform: scale(1.1);
               transform: scale(1.1);
           }
 
@@ -284,11 +319,13 @@
               justify-content: center;
               cursor: pointer;
               transition: all 0.3s;
+              -webkit-backdrop-filter: blur(10px);
               backdrop-filter: blur(10px);
           }
 
           .modal-nav:hover {
               background: rgba(255, 255, 255, 0.2);
+              -webkit-transform: translateY(-50%) scale(1.1);
               transform: translateY(-50%) scale(1.1);
           }
 
@@ -350,7 +387,13 @@
 
           /* Эффект нажатия на слайд */
           .slider-slide:active {
+              -webkit-transform: scale(0.98);
               transform: scale(0.98);
+          }
+
+          /* Фоллбэк для backdrop-filter в Tailwind-классах */
+          .backdrop-blur-sm {
+              -webkit-backdrop-filter: blur(4px);
           }
       </style>
   </head>
@@ -696,7 +739,7 @@
 
       <!-- Guarantees -->
       <section class="py-16 bg-white">
-          <div class="container mx-auto px-4">
+          <!-- <div class="container mx-auto px-4">
               <h2 class="text-3xl font-bold text-center mb-4">Мои гарантии</h2>
               <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">Работаю честно и открыто. Вот что я гарантирую каждому клиенту:</p>
               
@@ -732,7 +775,7 @@
                       <h3 class="font-semibold text-lg mb-2">Точное время</h3>
                       <p class="text-gray-600 text-sm">Приеду вовремя или предупрежу заранее. Ценю Ваше время</p>
                   </div>
-              </div>
+              </div> -->
               
               <div class="mt-10 bg-gray-50 rounded-2xl p-6 md:p-8">
                   <div class="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -904,7 +947,7 @@
                       <span class="slider-dot" data-slide="3" aria-label="Слайд 4"></span>
                       <span class="slider-dot" data-slide="4" aria-label="Слайд 5"></span>
                       <span class="slider-dot" data-slide="5" aria-label="Слайд 6"></span>
-                      <span class="slider-dot" data-slide="5" aria-label="Слайд 7"></span>
+                      <span class="slider-dot" data-slide="6" aria-label="Слайд 7"></span>
                   </div>
               </div>
               
@@ -948,25 +991,25 @@
           
           <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const track = document.getElementById('slider-track');
-                const slides = document.querySelectorAll('.slider-slide');
-                const dots = document.querySelectorAll('.slider-dot');
-                const prevBtn = document.getElementById('slider-prev');
-                const nextBtn = document.getElementById('slider-next');
+                var track = document.getElementById('slider-track');
+                var slides = document.querySelectorAll('.slider-slide');
+                var dots = document.querySelectorAll('.slider-dot');
+                var prevBtn = document.getElementById('slider-prev');
+                var nextBtn = document.getElementById('slider-next');
                 
                 // Элементы модального окна
-                const modal = document.getElementById('image-modal');
-                const modalImage = document.getElementById('modal-image');
-                const modalClose = document.getElementById('modal-close');
-                const modalPrev = document.getElementById('modal-prev');
-                const modalNext = document.getElementById('modal-next');
-                const modalCurrent = document.getElementById('modal-current');
-                const modalTotal = document.getElementById('modal-total');
+                var modal = document.getElementById('image-modal');
+                var modalImage = document.getElementById('modal-image');
+                var modalClose = document.getElementById('modal-close');
+                var modalPrev = document.getElementById('modal-prev');
+                var modalNext = document.getElementById('modal-next');
+                var modalCurrent = document.getElementById('modal-current');
+                var modalTotal = document.getElementById('modal-total');
                 
-                let currentSlide = 0;
-                let modalCurrentSlide = 0;
-                const totalSlides = slides.length;
-                const SLIDE_INTERVAL = 10000;
+                var currentSlide = 0;
+                var modalCurrentSlide = 0;
+                var totalSlides = slides.length;
+                var SLIDE_INTERVAL = 10000;
                 
                 // Установка общего количества слайдов
                 modalTotal.textContent = totalSlides;
@@ -974,10 +1017,12 @@
                 // Функция обновления слайдера
                 function updateSlider() {
                     // Перемещаем трек
-                    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+                    var translateValue = 'translateX(-' + (currentSlide * 100) + '%)';
+                    track.style.transform = translateValue;
+                    track.style.webkitTransform = translateValue;
                     
                     // Обновляем точки
-                    dots.forEach((dot, index) => {
+                    dots.forEach(function(dot, index) {
                         if (index === currentSlide) {
                             dot.classList.add('active');
                             dot.setAttribute('aria-current', 'true');
@@ -1007,7 +1052,7 @@
                 }
                 
                 // Автопрокрутка
-                let slideInterval = setInterval(nextSlide, SLIDE_INTERVAL);
+                var slideInterval = setInterval(nextSlide, SLIDE_INTERVAL);
                 
                 // Обработчики кнопок
                 nextBtn.addEventListener('click', function() {
@@ -1021,7 +1066,7 @@
                 });
                 
                 // Обработчики точек
-                dots.forEach(dot => {
+                dots.forEach(function(dot) {
                     dot.addEventListener('click', function() {
                         currentSlide = parseInt(this.getAttribute('data-slide'));
                         updateSlider();
@@ -1030,7 +1075,7 @@
                 });
                 
                 // Пауза при наведении
-                const sliderContainer = document.querySelector('.slider-container');
+                var sliderContainer = document.querySelector('.slider-container');
                 sliderContainer.addEventListener('mouseenter', function() {
                     clearInterval(slideInterval);
                 });
@@ -1040,37 +1085,102 @@
                 });
                 
                 // Обработчик свайпов для мобильных устройств
-                let startX = 0;
-                let isSwiping = false;
+                var startX = 0;
+                var startY = 0;
+                var currentTranslate = 0;
+                var isDragging = false;
+                var dragDirection = null; // 'horizontal' | 'vertical' | null
                 
                 track.addEventListener('touchstart', function(e) {
                     startX = e.touches[0].clientX;
-                    isSwiping = true;
+                    startY = e.touches[0].clientY;
+                    isDragging = true;
+                    dragDirection = null;
+                    currentTranslate = -currentSlide * 100;
+                    track.classList.add('dragging');
                     clearInterval(slideInterval);
-                });
+                }, { passive: true });
                 
                 track.addEventListener('touchmove', function(e) {
-                    if (!isSwiping) return;
-                    e.preventDefault();
-                });
-                
-                track.addEventListener('touchend', function(e) {
-                    if (!isSwiping) return;
+                    if (!isDragging) return;
                     
-                    const endX = e.changedTouches[0].clientX;
-                    const diffX = startX - endX;
+                    var currentX = e.touches[0].clientX;
+                    var currentY = e.touches[0].clientY;
+                    var diffX = currentX - startX;
+                    var diffY = currentY - startY;
                     
-                    if (Math.abs(diffX) > 50) {
-                        if (diffX > 0) {
-                            nextSlide();
+                    // Определяем направление свайпа при первом движении
+                    if (dragDirection === null && (Math.abs(diffX) > 5 || Math.abs(diffY) > 5)) {
+                        if (Math.abs(diffX) > Math.abs(diffY)) {
+                            dragDirection = 'horizontal';
                         } else {
-                            prevSlide();
+                            dragDirection = 'vertical';
+                            isDragging = false;
+                            track.classList.remove('dragging');
+                            return;
                         }
                     }
                     
-                    isSwiping = false;
+                    if (dragDirection !== 'horizontal') return;
+                    
+                    // Предотвращаем вертикальный скролл при горизонтальном свайпе
+                    e.preventDefault();
+                    
+                    // Перемещаем трек вслед за пальцем
+                    var sliderWidth = sliderContainer.offsetWidth;
+                    var dragPercent = (diffX / sliderWidth) * 100;
+                    
+                    // Замедляем перетаскивание на краях (первый/последний слайд)
+                    if ((currentSlide === 0 && diffX > 0) || (currentSlide === totalSlides - 1 && diffX < 0)) {
+                        dragPercent = dragPercent * 0.3;
+                    }
+                    
+                    var translateValue = currentTranslate + dragPercent;
+                    track.style.transform = 'translateX(' + translateValue + '%)';
+                    track.style.webkitTransform = 'translateX(' + translateValue + '%)';
+                }, { passive: false });
+                
+                track.addEventListener('touchend', function(e) {
+                    if (!isDragging && dragDirection !== 'horizontal') {
+                        track.classList.remove('dragging');
+                        restartInterval();
+                        return;
+                    }
+                    
+                    track.classList.remove('dragging');
+                    isDragging = false;
+                    
+                    var endX = e.changedTouches[0].clientX;
+                    var diffX = endX - startX;
+                    var sliderWidth = sliderContainer.offsetWidth;
+                    var threshold = sliderWidth * 0.15; // 15% ширины слайдера
+                    
+                    if (dragDirection === 'horizontal') {
+                        if (Math.abs(diffX) > threshold) {
+                            if (diffX < 0 && currentSlide < totalSlides - 1) {
+                                nextSlide();
+                            } else if (diffX > 0 && currentSlide > 0) {
+                                prevSlide();
+                            } else {
+                                updateSlider(); // Вернуть на место
+                            }
+                        } else {
+                            updateSlider(); // Вернуть на место
+                        }
+                    }
+                    
+                    dragDirection = null;
                     restartInterval();
-                });
+                }, { passive: true });
+                
+                // Обработка отмены касания
+                track.addEventListener('touchcancel', function() {
+                    isDragging = false;
+                    dragDirection = null;
+                    track.classList.remove('dragging');
+                    updateSlider();
+                    restartInterval();
+                }, { passive: true });
                 
                 // ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА
                 
@@ -1096,9 +1206,9 @@
                 
                 // Обновление модального окна
                 function updateModal() {
-                    const slide = slides[modalCurrentSlide];
-                    const imageSrc = slide.getAttribute('data-image-src');
-                    const imageAlt = slide.querySelector('img').getAttribute('alt');
+                    var slide = slides[modalCurrentSlide];
+                    var imageSrc = slide.getAttribute('data-image-src');
+                    var imageAlt = slide.querySelector('img').getAttribute('alt');
                     
                     modalImage.src = imageSrc;
                     modalImage.alt = imageAlt;
@@ -1122,12 +1232,21 @@
                 }
                 
                 // Обработчики кликов на слайды для открытия модального окна
-                slides.forEach((slide, index) => {
+                var touchMoved = false;
+                
+                slides.forEach(function(slide, index) {
+                    slide.addEventListener('touchstart', function() {
+                        touchMoved = false;
+                    }, { passive: true });
+                    
+                    slide.addEventListener('touchmove', function() {
+                        touchMoved = true;
+                    }, { passive: true });
+                    
                     slide.addEventListener('click', function(e) {
-                        // Проверяем, не был ли клик по кнопке навигации
-                        if (!e.target.closest('.slider-btn')) {
-                            openModal(index);
-                        }
+                        // Не открываем модальное окно если был свайп или клик по кнопке
+                        if (touchMoved || e.target.closest('.slider-btn')) return;
+                        openModal(index);
                     });
                 });
                 
@@ -1160,8 +1279,8 @@
                 });
                 
                 // Добавляем плавную загрузку изображений
-                const images = document.querySelectorAll('.slider-slide img, .modal-image');
-                images.forEach(img => {
+                var images = document.querySelectorAll('.slider-slide img, .modal-image');
+                images.forEach(function(img) {
                     if (img.complete) {
                         img.classList.add('loaded');
                     } else {
@@ -1223,7 +1342,7 @@
                   <script>
                   // Телефонная маска
                   document.addEventListener('DOMContentLoaded', function() {
-                      const phoneInput = document.getElementById('phone-input');
+                      var phoneInput = document.getElementById('phone-input');
                       
                       phoneInput.value = '+7 ';
                       
@@ -1247,18 +1366,18 @@
                               this.value = '+7 ' + this.value.replace(/[^\d]/g, '');
                           }
                           
-                          let numbers = this.value.replace(/\D/g, '').substring(1);
+                          var numbers = this.value.replace(/\D/g, '').substring(1);
                           if (numbers.length > 0) {
-                              let formatted = '+7 ';
+                              var formatted = '+7 ';
                               
                               if (numbers.length <= 3) {
                                   formatted += numbers;
                               } else if (numbers.length <= 6) {
-                                  formatted += `(${numbers.substring(0,3)}) ${numbers.substring(3)}`;
+                                  formatted += '(' + numbers.substring(0,3) + ') ' + numbers.substring(3);
                               } else if (numbers.length <= 8) {
-                                  formatted += `(${numbers.substring(0,3)}) ${numbers.substring(3,6)}-${numbers.substring(6)}`;
+                                  formatted += '(' + numbers.substring(0,3) + ') ' + numbers.substring(3,6) + '-' + numbers.substring(6);
                               } else {
-                                  formatted += `(${numbers.substring(0,3)}) ${numbers.substring(3,6)}-${numbers.substring(6,8)}-${numbers.substring(8,10)}`;
+                                  formatted += '(' + numbers.substring(0,3) + ') ' + numbers.substring(3,6) + '-' + numbers.substring(6,8) + '-' + numbers.substring(8,10);
                               }
                               
                               this.value = formatted;
@@ -1266,7 +1385,7 @@
                       });
                       
                       phoneInput.addEventListener('blur', function() {
-                          const cleanNumber = this.value.replace(/\D/g, '');
+                          var cleanNumber = this.value.replace(/\D/g, '');
                           if (cleanNumber.length < 2) {
                               this.value = '+7 ';
                           }
@@ -1275,16 +1394,16 @@
                   
                   // Валидация формы в реальном времени - кнопка активна только при валидных данных
                   document.addEventListener('DOMContentLoaded', function() {
-                      const form = document.getElementById('contact-form');
-                      const submitBtn = document.getElementById('submit-btn');
-                      const nameInput = document.getElementById('name-input');
-                      const phoneInput = document.getElementById('phone-input');
-                      const messageInput = document.getElementById('message-input');
+                      var form = document.getElementById('contact-form');
+                      var submitBtn = document.getElementById('submit-btn');
+                      var nameInput = document.getElementById('name-input');
+                      var phoneInput = document.getElementById('phone-input');
+                      var messageInput = document.getElementById('message-input');
                       
                       // Элементы галочек
-                      const nameCheck = document.getElementById('name-check');
-                      const phoneCheck = document.getElementById('phone-check');
-                      const messageCheck = document.getElementById('message-check');
+                      var nameCheck = document.getElementById('name-check');
+                      var phoneCheck = document.getElementById('phone-check');
+                      var messageCheck = document.getElementById('message-check');
                       
                       function updateFieldStatus(input, checkMark, isValid, hasValue) {
                           if (isValid) {
@@ -1302,15 +1421,15 @@
                       }
                       
                       function validateForm() {
-                          const name = nameInput.value.trim();
-                          const phone = phoneInput.value.trim();
-                          const message = messageInput.value.trim();
-                          const phoneDigits = phone.replace(/\D/g, '');
+                          var name = nameInput.value.trim();
+                          var phone = phoneInput.value.trim();
+                          var message = messageInput.value.trim();
+                          var phoneDigits = phone.replace(/\D/g, '');
                           
                           // Проверяем все условия валидности
-                          const isNameValid = name.length >= 2;
-                          const isPhoneValid = phoneDigits.length >= 11; // +7 и 10 цифр номера
-                          const isMessageValid = message.length >= 1;
+                          var isNameValid = name.length >= 2;
+                          var isPhoneValid = phoneDigits.length >= 11; // +7 и 10 цифр номера
+                          var isMessageValid = message.length >= 1;
                           
                           // Визуальная обратная связь для каждого поля
                           updateFieldStatus(nameInput, nameCheck, isNameValid, name.length > 0);
@@ -1336,31 +1455,31 @@
                   
                   // AJAX отправка формы на Flask-сервер
                     document.addEventListener('DOMContentLoaded', function() {
-                        const form = document.getElementById('contact-form');
+                        var form = document.getElementById('contact-form');
                         
-                        form.addEventListener('submit', async function(e) {
+                        form.addEventListener('submit', function(e) {
                             e.preventDefault();
                             
-                            const nameInput = form.querySelector('[name="name"]');
-                            const phoneInput = form.querySelector('[name="phone"]');
-                            const name = nameInput.value.trim();
-                            const phone = phoneInput.value.trim();
+                            var nameInput = form.querySelector('[name="name"]');
+                            var phoneInput = form.querySelector('[name="phone"]');
+                            var name = nameInput.value.trim();
+                            var phone = phoneInput.value.trim();
                             
-                            const formData = new FormData(this);
-                            const submitBtn = document.getElementById('submit-btn');
-                            const originalText = submitBtn.textContent;
+                            var formData = new FormData(this);
+                            var submitBtn = document.getElementById('submit-btn');
+                            var originalText = submitBtn.textContent;
                             
                             submitBtn.textContent = 'Отправляем...';
                             submitBtn.disabled = true;
                             
-                            try {
-                                const response = await fetch('/tg-lead', {
-                                    method: 'POST',
-                                    body: formData
-                                });
-                                
-                                const data = await response.json();
-                                
+                            fetch('/tg-lead', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(function(response) {
+                                return response.json();
+                            })
+                            .then(function(data) {
                                 if (data.ok) {
                                   // ОТПРАВКА СОБЫТИЯ В ЯНДЕКС.МЕТРИКУ
                                   if (typeof ym !== 'undefined') {
@@ -1371,22 +1490,19 @@
                                       });
                                   }
                                     // Используем имя пользователя в сообщении об успехе
-                                    // Делаем первую букву заглавной
-                                    const formattedName = name.split(' ')[0];
-                                    const capitalizedName = formattedName.charAt(0).toUpperCase() + formattedName.slice(1);
-                                    const successHTML = `
-                                        <div class="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
-                                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                                <span class="text-green-600 text-3xl">✓</span>
-                                            </div>
-                                            <h3 class="text-xl font-semibold text-green-800 mb-3">Спасибо, ${capitalizedName}!</h3>
-                                            <p class="text-green-700 mb-2">Ваша заявка успешно отправлена</p>
-                                            <p class="text-green-700 mb-6">Я свяжусь с вами в течение 15 минут</p>
-                                            <button onclick="location.reload()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition">
-                                                Отправить ещё одну заявку
-                                            </button>
-                                        </div>
-                                    `;
+                                    var formattedName = name.split(' ')[0];
+                                    var capitalizedName = formattedName.charAt(0).toUpperCase() + formattedName.slice(1);
+                                    var successHTML = '<div class="bg-green-50 border border-green-200 rounded-xl p-8 text-center">' +
+                                        '<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">' +
+                                            '<span class="text-green-600 text-3xl">✓</span>' +
+                                        '</div>' +
+                                        '<h3 class="text-xl font-semibold text-green-800 mb-3">Спасибо, ' + capitalizedName + '!</h3>' +
+                                        '<p class="text-green-700 mb-2">Ваша заявка успешно отправлена</p>' +
+                                        '<p class="text-green-700 mb-6">Я свяжусь с вами в течение 15 минут</p>' +
+                                        '<button onclick="location.reload()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition">' +
+                                            'Отправить ещё одну заявку' +
+                                        '</button>' +
+                                    '</div>';
                                     
                                     form.innerHTML = successHTML;
                                 } else {
@@ -1394,11 +1510,12 @@
                                     submitBtn.textContent = originalText;
                                     submitBtn.disabled = false;
                                 }
-                            } catch (error) {
+                            })
+                            .catch(function(error) {
                                 alert('Ошибка отправки формы. Попробуйте позвонить напрямую.');
                                 submitBtn.textContent = originalText;
                                 submitBtn.disabled = false;
-                            }
+                            });
                         });
                     });
                   </script>
