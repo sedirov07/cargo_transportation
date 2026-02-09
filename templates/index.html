@@ -1141,35 +1141,36 @@
                 }, { passive: false });
                 
                 track.addEventListener('touchend', function(e) {
-                    if (!isDragging && dragDirection !== 'horizontal') {
-                        track.classList.remove('dragging');
-                        restartInterval();
-                        return;
-                    }
+                    var wasDragging = dragDirection === 'horizontal';
                     
                     track.classList.remove('dragging');
                     isDragging = false;
+                    dragDirection = null;
+                    
+                    if (!wasDragging) {
+                        // Не было горизонтального свайпа — убедимся, что слайдер на месте
+                        updateSlider();
+                        restartInterval();
+                        return;
+                    }
                     
                     var endX = e.changedTouches[0].clientX;
                     var diffX = endX - startX;
                     var sliderWidth = sliderContainer.offsetWidth;
                     var threshold = sliderWidth * 0.15; // 15% ширины слайдера
                     
-                    if (dragDirection === 'horizontal') {
-                        if (Math.abs(diffX) > threshold) {
-                            if (diffX < 0 && currentSlide < totalSlides - 1) {
-                                nextSlide();
-                            } else if (diffX > 0 && currentSlide > 0) {
-                                prevSlide();
-                            } else {
-                                updateSlider(); // Вернуть на место
-                            }
+                    if (Math.abs(diffX) > threshold) {
+                        if (diffX < 0 && currentSlide < totalSlides - 1) {
+                            nextSlide();
+                        } else if (diffX > 0 && currentSlide > 0) {
+                            prevSlide();
                         } else {
-                            updateSlider(); // Вернуть на место
+                            updateSlider(); // Вернуть на место (край)
                         }
+                    } else {
+                        updateSlider(); // Вернуть на место (маленький свайп)
                     }
                     
-                    dragDirection = null;
                     restartInterval();
                 }, { passive: true });
                 
