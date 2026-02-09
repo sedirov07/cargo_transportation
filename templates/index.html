@@ -1096,8 +1096,30 @@
                     startY = e.touches[0].clientY;
                     isDragging = true;
                     dragDirection = null;
-                    currentTranslate = -currentSlide * 100;
+                    
+                    // Получаем реальную текущую позицию трека (важно при касании во время CSS-перехода)
+                    var computedStyle = window.getComputedStyle(track);
+                    var matrix = computedStyle.transform || computedStyle.webkitTransform;
+                    if (matrix && matrix !== 'none') {
+                        var matrixValues = matrix.match(/matrix.*\((.+)\)/);
+                        if (matrixValues) {
+                            var values = matrixValues[1].split(', ');
+                            var translateX = parseFloat(values[4]) || 0;
+                            var sliderWidth = sliderContainer.offsetWidth;
+                            currentTranslate = (translateX / sliderWidth) * 100;
+                            // Синхронизируем currentSlide с фактической позицией
+                            currentSlide = Math.round(-currentTranslate / 100);
+                        } else {
+                            currentTranslate = -currentSlide * 100;
+                        }
+                    } else {
+                        currentTranslate = -currentSlide * 100;
+                    }
+                    
                     track.classList.add('dragging');
+                    // Фиксируем трек на текущей визуальной позиции
+                    track.style.transform = 'translateX(' + currentTranslate + '%)';
+                    track.style.webkitTransform = 'translateX(' + currentTranslate + '%)';
                     clearInterval(slideInterval);
                 }, { passive: true });
                 
@@ -1143,12 +1165,12 @@
                 track.addEventListener('touchend', function(e) {
                     var wasDragging = dragDirection === 'horizontal';
                     
-                    track.classList.remove('dragging');
                     isDragging = false;
                     dragDirection = null;
                     
                     if (!wasDragging) {
-                        // Не было горизонтального свайпа — убедимся, что слайдер на месте
+                        // Не было горизонтального свайпа — привязываем к ближайшему слайду
+                        track.classList.remove('dragging');
                         updateSlider();
                         restartInterval();
                         return;
@@ -1159,17 +1181,20 @@
                     var sliderWidth = sliderContainer.offsetWidth;
                     var threshold = sliderWidth * 0.15; // 15% ширины слайдера
                     
+                    // Определяем целевой слайд
                     if (Math.abs(diffX) > threshold) {
                         if (diffX < 0 && currentSlide < totalSlides - 1) {
-                            nextSlide();
+                            currentSlide++;
                         } else if (diffX > 0 && currentSlide > 0) {
-                            prevSlide();
-                        } else {
-                            updateSlider(); // Вернуть на место (край)
+                            currentSlide--;
                         }
-                    } else {
-                        updateSlider(); // Вернуть на место (маленький свайп)
                     }
+                    
+                    // Убираем dragging и принудительно задаём reflow,
+                    // чтобы transition корректно сработал от текущей позиции
+                    track.classList.remove('dragging');
+                    void track.offsetWidth; // force reflow
+                    updateSlider();
                     
                     restartInterval();
                 }, { passive: true });
