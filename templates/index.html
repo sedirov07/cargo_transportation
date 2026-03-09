@@ -34,368 +34,9 @@
       
       <!-- Tailwind CSS -->
       <script src="https://cdn.tailwindcss.com"></script>
-      <style>
-          body { font-family: 'Inter', sans-serif; }
-          .hero-gradient { background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%); }
-          .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
-          .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
-          .rating-badge {
-              background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-              color: white;
-          }
-
-          /* Стили для слайдера */
-          .slider-container {
-              position: relative;
-              overflow: hidden;
-              border-radius: 1rem;
-              height: 500px; /* Фиксированная высота для десктопа */
-              touch-action: pan-y;
-              -webkit-touch-callout: none;
-          }
-          
-          .slider-track {
-              display: -webkit-box;
-              display: -webkit-flex;
-              display: flex;
-              -webkit-transition: -webkit-transform 0.4s ease-out;
-              transition: transform 0.4s ease-out;
-              height: 100%;
-              will-change: transform;
-          }
-          
-          .slider-track.dragging {
-              -webkit-transition: none;
-              transition: none;
-          }
-          
-          .slider-slide {
-              min-width: 100%;
-              position: relative;
-              height: 100%;
-              -webkit-flex-shrink: 0;
-              flex-shrink: 0;
-              cursor: pointer;
-              -webkit-user-select: none;
-              user-select: none;
-          }
-          
-          .slider-slide img {
-              width: 100%;
-              height: 100%;
-              -o-object-fit: cover;
-              object-fit: cover;
-              -webkit-transition: -webkit-transform 0.7s ease;
-              transition: transform 0.7s ease;
-              pointer-events: none;
-          }
-          
-          .slider-slide img.loaded {
-              opacity: 1;
-          }
-          
-          .slider-nav {
-              display: flex;
-              justify-content: center;
-              gap: 0.5rem;
-              margin-top: 1.5rem;
-              position: absolute;
-              bottom: 1rem;
-              left: 0;
-              right: 0;
-              z-index: 20;
-          }
-          
-          .slider-dot {
-              width: 10px;
-              height: 10px;
-              border-radius: 50%;
-              background-color: rgba(255, 255, 255, 0.5);
-              cursor: pointer;
-              transition: all 0.3s ease;
-              border: 2px solid transparent;
-          }
-          
-          .slider-dot:hover {
-              background-color: rgba(255, 255, 255, 0.8);
-              -webkit-transform: scale(1.2);
-              transform: scale(1.2);
-          }
-          
-          .slider-dot.active {
-              background-color: #3b82f6;
-              -webkit-transform: scale(1.3);
-              transform: scale(1.3);
-              border-color: white;
-              -webkit-box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-              box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-          }
-          
-          .slider-btn {
-              position: absolute;
-              top: 50%;
-              -webkit-transform: translateY(-50%);
-              transform: translateY(-50%);
-              background: rgba(255, 255, 255, 0.9);
-              border: none;
-              width: 3rem;
-              height: 3rem;
-              border-radius: 50%;
-              display: -webkit-box;
-              display: -webkit-flex;
-              display: flex;
-              -webkit-box-align: center;
-              -webkit-align-items: center;
-              align-items: center;
-              -webkit-box-pack: center;
-              -webkit-justify-content: center;
-              justify-content: center;
-              cursor: pointer;
-              -webkit-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-              z-index: 20;
-              -webkit-transition: all 0.3s;
-              transition: all 0.3s;
-          }
-          
-          .slider-btn:hover {
-              background: white;
-              box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-          }
-          
-          .slider-btn-prev { 
-              left: 1rem; 
-          }
-          
-          .slider-btn-next { 
-              right: 1rem; 
-          }
-          
-          .slider-btn svg {
-              width: 1.5rem;
-              height: 1.5rem;
-              stroke: #374151;
-          }
-
-          /* Адаптивность для изображений */
-          @media (max-width: 768px) {
-              .slider-container {
-                  height: 300px; /* Меньшая высота для мобильных */
-              }
-              
-              .slider-slide .absolute {
-                  padding: 1rem;
-              }
-              
-              .slider-slide h3 {
-                  font-size: 1.125rem;
-                  margin-bottom: 0.25rem;
-              }
-              
-              .slider-slide p {
-                  font-size: 0.75rem;
-                  line-height: 1.2;
-              }
-              
-              .slider-btn {
-                  width: 2.5rem;
-                  height: 2.5rem;
-              }
-          }
-
-          /* Для очень маленьких экранов */
-          @media (max-width: 480px) {
-              .slider-container {
-                  height: 250px;
-              }
-              
-              .slider-btn {
-                  width: 2rem;
-                  height: 2rem;
-              }
-              
-              .slider-btn svg {
-                  width: 1rem;
-                  height: 1rem;
-              }
-          }
-
-          /* Плавное появление изображений */
-          @keyframes fadeIn {
-              from { opacity: 0; }
-              to { opacity: 1; }
-          }
-
-          .slider-slide img {
-              animation: fadeIn 0.5s ease-out;
-          }
-
-          /* Эффект при наведении на слайд */
-          .slider-slide:hover img {
-              transform: scale(1.05);
-          }
-
-          /* Стили для модального окна */
-          .image-modal {
-              display: none;
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background-color: rgba(0, 0, 0, 0.95);
-              z-index: 1000;
-              animation: fadeInModal 0.3s ease-out;
-          }
-
-          .image-modal.active {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-          }
-
-          @keyframes fadeInModal {
-              from { opacity: 0; }
-              to { opacity: 1; }
-          }
-
-          .modal-content {
-              position: relative;
-              max-width: 90%;
-              max-height: 90%;
-              width: auto;
-              height: auto;
-          }
-
-          .modal-image {
-              max-width: 100%;
-              max-height: 90vh;
-              object-fit: contain;
-              border-radius: 8px;
-              box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-          }
-
-          .modal-close {
-              position: absolute;
-              top: -40px;
-              right: 0;
-              background: rgba(255, 255, 255, 0.1);
-              border: none;
-              width: 36px;
-              height: 36px;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-              transition: all 0.3s;
-              -webkit-backdrop-filter: blur(10px);
-              backdrop-filter: blur(10px);
-          }
-
-          .modal-close:hover {
-              background: rgba(255, 255, 255, 0.2);
-              -webkit-transform: scale(1.1);
-              transform: scale(1.1);
-          }
-
-          .modal-close svg {
-              width: 20px;
-              height: 20px;
-              stroke: white;
-          }
-
-          .modal-nav {
-              position: absolute;
-              top: 50%;
-              transform: translateY(-50%);
-              background: rgba(255, 255, 255, 0.1);
-              border: none;
-              width: 44px;
-              height: 44px;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-              transition: all 0.3s;
-              -webkit-backdrop-filter: blur(10px);
-              backdrop-filter: blur(10px);
-          }
-
-          .modal-nav:hover {
-              background: rgba(255, 255, 255, 0.2);
-              -webkit-transform: translateY(-50%) scale(1.1);
-              transform: translateY(-50%) scale(1.1);
-          }
-
-          .modal-nav svg {
-              width: 24px;
-              height: 24px;
-              stroke: white;
-          }
-
-          .modal-prev {
-              left: 20px;
-          }
-
-          .modal-next {
-              right: 20px;
-          }
-
-          .modal-counter {
-              position: absolute;
-              bottom: -40px;
-              left: 0;
-              right: 0;
-              text-align: center;
-              color: white;
-              font-size: 14px;
-              opacity: 0.8;
-          }
-
-          /* Адаптивность модального окна */
-          @media (max-width: 768px) {
-              .modal-content {
-                  max-width: 95%;
-                  max-height: 85%;
-              }
-              
-              .modal-nav {
-                  width: 36px;
-                  height: 36px;
-              }
-              
-              .modal-nav svg {
-                  width: 18px;
-                  height: 18px;
-              }
-              
-              .modal-prev {
-                  left: 10px;
-              }
-              
-              .modal-next {
-                  right: 10px;
-              }
-              
-              .modal-close {
-                  top: -50px;
-                  right: 10px;
-              }
-          }
-
-          /* Эффект нажатия на слайд */
-          .slider-slide:active {
-              -webkit-transform: scale(0.98);
-              transform: scale(0.98);
-          }
-
-          /* Фоллбэк для backdrop-filter в Tailwind-классах */
-          .backdrop-blur-sm {
-              -webkit-backdrop-filter: blur(4px);
-          }
-      </style>
+      
+      <!-- Custom CSS -->
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   </head>
   <body class="bg-gray-50 text-gray-900">
       <!-- Header -->
@@ -415,8 +56,24 @@
           </div>
       </header>
 
-      <!-- Hero -->
-    <section class="hero-gradient text-white">
+      <!-- Mode Switcher -->
+      <div id="mode-switcher" class="bg-white border-b py-3">
+          <div class="container mx-auto px-4">
+              <div class="mode-switcher-container">
+                  <div class="mode-switcher">
+                      <button class="mode-btn active" data-target="city">
+                          🏙️ По Екатеринбургу
+                      </button>
+                      <button class="mode-btn" data-target="intercity">
+                          🚛 Межгород / Россия
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Hero: По городу -->
+    <section data-mode="city" class="hero-gradient text-white">
         <div class="container mx-auto px-4 py-16">
             <div class="flex flex-col md:flex-row justify-between items-start gap-8">
                 <!-- Левый блок -->
@@ -437,13 +94,17 @@
                         Квартирные и дачные переезды, перевозка мебели и техники до 1,5 тонн. 
                         Фиксированная цена, аккуратность и пунктуальность.
                     </p>
-                    <div class="flex flex-wrap gap-4">
-                        <a href="#contact" class="bg-white text-blue-600 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex flex-wrap gap-3">
+                        <a href="#calculator-city" class="bg-white text-blue-600 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition">
                             Рассчитать стоимость
                         </a>
-                        <a href="https://t.me/+79226141249" class="bg-white/20 backdrop-blur-sm font-medium px-6 py-3 rounded-lg hover:bg-white/30 transition inline-flex items-center">
+                        <a href="https://wa.me/79226141249?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D1%81%D1%82%D0%BE%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D1%8C%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B7%D0%BA%D0%B8" target="_blank" rel="noopener noreferrer" class="bg-green-500/90 backdrop-blur-sm font-medium px-6 py-3 rounded-lg hover:bg-green-500 transition inline-flex items-center">
+                            <img src="{{ url_for('static', filename='icons/whatsapp.svg') }}" alt="WhatsApp" class="w-5 h-5 mr-2 invert" loading="lazy" />
+                            WhatsApp
+                        </a>
+                        <a href="https://t.me/+79226141249" target="_blank" rel="noopener noreferrer" class="bg-white/20 backdrop-blur-sm font-medium px-6 py-3 rounded-lg hover:bg-white/30 transition inline-flex items-center">
                             <img src="{{ url_for('static', filename='icons/telegram.svg') }}" alt="Telegram" class="w-5 h-5 mr-2" loading="lazy" />
-                            Написать
+                            Telegram
                         </a>
                     </div>
                 </div>
@@ -490,8 +151,82 @@
         </div>
     </section>
 
-      <!-- Location & Rating -->
-      <section class="py-8 bg-white border-b">
+      <!-- Hero: Межгород -->
+    <section data-mode="intercity" class="hidden hero-gradient-intercity text-white">
+        <div class="container mx-auto px-4 py-16">
+            <div class="flex flex-col md:flex-row justify-between items-start gap-8">
+                <div class="md:w-1/2">
+                    <div class="flex flex-wrap items-center gap-2 mb-4">
+                        <span class="inline-block bg-white/20 backdrop-blur-sm text-sm font-medium px-3 py-1 rounded-full">
+                            Работа с юрлицами • ИП
+                        </span>
+                        <span class="inline-block bg-green-300/20 backdrop-blur-sm text-sm font-medium px-3 py-1 rounded-full">
+                            Проверенный на Avito
+                        </span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-6">
+                        Междугородние<br>
+                        <span>грузоперевозки по России</span>
+                    </h1>
+                    <p class="text-xl text-green-100 mb-8 max-w-2xl">
+                        Доставка коммерческих грузов, товаров и оборудования из Екатеринбурга по всей России.
+                        Газель NEXT 4,2м, до 1,5 тонн.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="#calculator-intercity" class="bg-white text-emerald-700 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition">
+                            Рассчитать маршрут
+                        </a>
+                        <a href="https://wa.me/79226141249?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D1%81%D1%82%D0%BE%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D1%8C%20%D0%BC%D0%B5%D0%B6%D0%B4%D1%83%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D0%BD%D0%B5%D0%B9%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B7%D0%BA%D0%B8" target="_blank" rel="noopener noreferrer" class="bg-green-500/90 backdrop-blur-sm font-medium px-6 py-3 rounded-lg hover:bg-green-500 transition inline-flex items-center">
+                            <img src="{{ url_for('static', filename='icons/whatsapp.svg') }}" alt="WhatsApp" class="w-5 h-5 mr-2 invert" loading="lazy" />
+                            WhatsApp
+                        </a>
+                        <a href="https://t.me/+79226141249" target="_blank" rel="noopener noreferrer" class="bg-white/20 backdrop-blur-sm font-medium px-6 py-3 rounded-lg hover:bg-white/30 transition inline-flex items-center">
+                            <img src="{{ url_for('static', filename='icons/telegram.svg') }}" alt="Telegram" class="w-5 h-5 mr-2" loading="lazy" />
+                            Telegram
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Маршруты -->
+                <div class="md:w-auto">
+                    <div class="bg-white/10 p-6 rounded-2xl backdrop-blur-sm max-w-md w-full">
+                        <h3 class="font-semibold text-lg mb-4">Популярные направления</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center text-sm">
+                                <span>Екатеринбург → Челябинск</span>
+                                <span class="font-semibold">~210 км</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span>Екатеринбург → Тюмень</span>
+                                <span class="font-semibold">~330 км</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span>Екатеринбург → Курган</span>
+                                <span class="font-semibold">~370 км</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span>Екатеринбург → Пермь</span>
+                                <span class="font-semibold">~360 км</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span>Екатеринбург → Уфа</span>
+                                <span class="font-semibold">~500 км</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm text-green-200">
+                                <span>И любой другой город РФ</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <a href="#calculator-intercity" class="inline-block bg-white text-emerald-700 px-4 py-2 rounded-lg font-semibold">Узнать стоимость маршрута</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+      <!-- Location & Rating: По городу -->
+      <section data-mode="city" class="py-8 bg-white border-b">
           <div class="container mx-auto px-4">
               <div class="grid md:grid-cols-3 gap-6">
                   <div class="flex items-center space-x-3">
@@ -516,8 +251,43 @@
           </div>
       </section>
 
-      <!-- Benefits -->
-      <section class="py-16 bg-white">
+      <!-- Location: Межгород -->
+      <section data-mode="intercity" class="hidden py-8 bg-white border-b">
+          <div class="container mx-auto px-4">
+              <div class="grid md:grid-cols-3 gap-6">
+                  <div class="flex items-center space-x-3">
+                      <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                          <span class="text-emerald-600">📦</span>
+                      </div>
+                      <div>
+                          <p class="font-medium">База в Екатеринбурге</p>
+                          <p class="text-sm text-gray-600">ул. Ильича, Екатеринбург</p>
+                      </div>
+                  </div>
+                  <div class="flex items-center space-x-3">
+                      <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                          <span class="text-emerald-600">🗺️</span>
+                      </div>
+                      <div>
+                          <p class="font-medium">Маршруты по России</p>
+                          <p class="text-sm text-gray-600">Свердловская область и Россия</p>
+                      </div>
+                  </div>
+                  <div class="flex items-center space-x-3">
+                      <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                          <span class="text-emerald-600">📤</span>
+                      </div>
+                      <div>
+                          <p class="font-medium">Попутный груз</p>
+                          <p class="text-sm text-gray-600">Экономьте на догрузе</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Benefits: По городу -->
+      <section data-mode="city" class="py-16 bg-white">
           <div class="container mx-auto px-4">
               <h2 class="text-3xl font-bold text-center mb-12">Почему выбирают меня</h2>
               <div class="grid md:grid-cols-3 gap-8">
@@ -552,8 +322,44 @@
           </div>
       </section>
 
-      <!-- Truck Info -->
-      <section class="py-16 bg-gray-50">
+      <!-- Benefits: Межгород -->
+      <section data-mode="intercity" class="hidden py-16 bg-white">
+          <div class="container mx-auto px-4">
+              <h2 class="text-3xl font-bold text-center mb-12">Почему выбирают меня</h2>
+              <div class="grid md:grid-cols-3 gap-8">
+                  <div class="card-hover bg-gray-50 p-6 rounded-2xl border border-gray-200">
+                      <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                          <span class="text-emerald-600 font-bold text-xl">✓</span>
+                      </div>
+                      <h3 class="text-xl font-semibold mb-3">Личная ответственность</h3>
+                      <p class="text-gray-600">
+                          Сам принимаю заказы и лично выполняю перевозку. Вы всегда знаете, с кем работаете — без диспетчеров и посредников.
+                      </p>
+                  </div>
+                  <div class="card-hover bg-gray-50 p-6 rounded-2xl border border-gray-200">
+                      <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                          <span class="text-emerald-600 font-bold text-xl">🔁</span>
+                      </div>
+                      <h3 class="text-xl font-semibold mb-3">Регулярные маршруты</h3>
+                      <p class="text-gray-600">
+                          Постоянным клиентам — скидки и приоритетное бронирование. Удобно для регулярных поставок.
+                      </p>
+                  </div>
+                  <div class="card-hover bg-gray-50 p-6 rounded-2xl border border-gray-200">
+                      <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                          <span class="text-emerald-600 font-bold text-xl">⏰</span>
+                      </div>
+                      <h3 class="text-xl font-semibold mb-3">Точные сроки</h3>
+                      <p class="text-gray-600">
+                          Согласованные сроки доставки. Отчитываюсь о местоположении в пути. Доставлю груз вовремя.
+                      </p>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Truck Info: По городу -->
+      <section data-mode="city" class="py-16 bg-gray-50">
           <div class="container mx-auto px-4">
               <div class="grid md:grid-cols-2 gap-12 items-center">
                   <div>
@@ -613,19 +419,12 @@
                               </div>
                               <span class="font-bold text-lg">20 ₽/км</span>
                           </div>
-                          <div class="flex justify-between items-center border-b pb-3">
-                              <div>
-                                  <p class="font-medium">По городу (альтернатива)</p>
-                                  <p class="text-sm text-gray-500">Километраж по городу</p>
-                              </div>
-                              <span class="font-bold text-lg">15 ₽/км</span>
-                          </div>
                           <div class="flex justify-between items-center">
                               <div>
                                   <p class="font-medium">Услуги грузчиков</p>
                                   <p class="text-sm text-gray-500">При необходимости</p>
                               </div>
-                              <span class="font-bold text-lg">от 300 ₽/час</span>
+                              <span class="font-bold text-lg">от 600 ₽/час</span>
                           </div>
                       </div>
                       <div class="mt-6 p-4 bg-blue-50 rounded-lg">
@@ -638,8 +437,82 @@
           </div>
       </section>
 
-      <!-- Services -->
-      <section class="py-16 bg-white">
+      <!-- Truck Info: Межгород -->
+      <section data-mode="intercity" class="hidden py-16 bg-gray-50">
+          <div class="container mx-auto px-4">
+              <div class="grid md:grid-cols-2 gap-12 items-center">
+                  <div>
+                      <h2 class="text-3xl font-bold mb-6">Газель NEXT 4,2м</h2>
+                      <div class="grid grid-cols-2 gap-4 mb-6">
+                          <div class="bg-white p-4 rounded-xl shadow-sm">
+                              <p class="text-sm text-gray-500">Грузоподъёмность</p>
+                              <p class="text-lg font-bold">До 1,5 тонн</p>
+                          </div>
+                          <div class="bg-white p-4 rounded-xl shadow-sm">
+                              <p class="text-sm text-gray-500">Тип кузова</p>
+                              <p class="text-lg font-bold">Тент</p>
+                          </div>
+                          <div class="bg-white p-4 rounded-xl shadow-sm">
+                              <p class="text-sm text-gray-500">Размер кузова</p>
+                              <p class="text-lg font-bold">4.2 × 2.1 × 2.2 м</p>
+                          </div>
+                          <div class="bg-white p-4 rounded-xl shadow-sm">
+                              <p class="text-sm text-gray-500">Объём кузова</p>
+                              <p class="text-lg font-bold">~19 м³</p>
+                          </div>
+                      </div>
+                      <ul class="space-y-3">
+                          <li class="flex items-start">
+                              <span class="text-emerald-600 font-bold mr-3">•</span>
+                              <span><strong>Работа с юрлицами и ИП</strong> (без НДС)</span>
+                          </li>
+                          <li class="flex items-start">
+                              <span class="text-emerald-600 font-bold mr-3">•</span>
+                              <span>Надёжная фиксация груза в пути</span>
+                          </li>
+                          <li class="flex items-start">
+                              <span class="text-emerald-600 font-bold mr-3">•</span>
+                              <span>Отчёты о местоположении в пути</span>
+                          </li>
+                      </ul>
+                  </div>
+                  <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
+                      <h3 class="font-semibold text-xl mb-4">Стоимость междугородних перевозок</h3>
+                      <div class="space-y-4">
+                          <div class="flex justify-between items-center border-b pb-3">
+                              <div>
+                                  <p class="font-medium">Межгород / область</p>
+                                  <p class="text-sm text-gray-500">Выделенная машина</p>
+                              </div>
+                              <span class="font-bold text-lg">20 ₽/км</span>
+                          </div>
+                          <div class="flex justify-between items-center border-b pb-3">
+                              <div>
+                                  <p class="font-medium">Попутный груз / догруз</p>
+                                  <p class="text-sm text-gray-500">Экономичный вариант</p>
+                              </div>
+                              <span class="font-bold text-lg">Договорная</span>
+                          </div>
+                          <div class="flex justify-between items-center border-b pb-3">
+                              <div>
+                                  <p class="font-medium">Услуги грузчиков</p>
+                                  <p class="text-sm text-gray-500">Погрузка / разгрузка</p>
+                              </div>
+                              <span class="font-bold text-lg">от 600 ₽/час</span>
+                          </div>
+                      </div>
+                      <div class="mt-6 p-4 bg-emerald-50 rounded-lg">
+                          <p class="text-sm text-emerald-700">
+                              <strong>Стоимость зависит от маршрута.</strong><a href="tel:+79226141249"> Звоните </a>— рассчитаю точную цену!
+                          </p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Services: По городу -->
+      <section data-mode="city" class="py-16 bg-white">
           <div class="container mx-auto px-4">
               <h2 class="text-3xl font-bold mb-12">Услуги и виды грузов</h2>
               <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -708,8 +581,78 @@
           </div>
       </section>
 
-      <!-- Process -->
-      <section class="py-16 bg-gray-50">
+      <!-- Services: Межгород -->
+      <section data-mode="intercity" class="hidden py-16 bg-white">
+          <div class="container mx-auto px-4">
+              <h2 class="text-3xl font-bold mb-12">Типы грузов для междугородних перевозок</h2>
+              <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                      <h3 class="font-semibold text-lg mb-3">Коммерческие грузы</h3>
+                      <p class="text-gray-600 text-sm">Товары для магазинов, складов и маркетплейсов</p>
+                  </div>
+                  <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                      <h3 class="font-semibold text-lg mb-3">Оборудование и запчасти</h3>
+                      <p class="text-gray-600 text-sm">Промышленное оборудование, автозапчасти, комплектующие</p>
+                  </div>
+                  <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                      <h3 class="font-semibold text-lg mb-3">Стройматериалы</h3>
+                      <p class="text-gray-600 text-sm">Доставка материалов на объекты в других городах</p>
+                  </div>
+                  <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                      <h3 class="font-semibold text-lg mb-3">Сборные грузы</h3>
+                      <p class="text-gray-600 text-sm">Объединение грузов от нескольких отправителей — дешевле</p>
+                  </div>
+                  <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                      <h3 class="font-semibold text-lg mb-3">Личные вещи межгород</h3>
+                      <p class="text-gray-600 text-sm">Переезд в другой город, отправка вещей родственникам</p>
+                  </div>
+                  <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                      <h3 class="font-semibold text-lg mb-3">Попутная доставка</h3>
+                      <p class="text-gray-600 text-sm">Догруз по маршруту — экономичный вариант перевозки</p>
+                  </div>
+              </div>
+              
+              <div class="mt-8 grid md:grid-cols-2 gap-6">
+                  <div class="p-6 bg-emerald-50 rounded-xl">
+                      <h4 class="font-semibold text-lg mb-3">Варианты доставки</h4>
+                      <ul class="space-y-2">
+                          <li class="flex items-center">
+                              <span class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
+                              <span>Выделенная машина</span>
+                          </li>
+                          <li class="flex items-center">
+                              <span class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
+                              <span>Попутный груз / догруз</span>
+                          </li>
+                          <li class="flex items-center">
+                              <span class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
+                              <span>Сборный груз от нескольких отправителей</span>
+                          </li>
+                      </ul>
+                  </div>
+                  <div class="p-6 bg-blue-50 rounded-xl">
+                      <h4 class="font-semibold text-lg mb-3">Для бизнеса</h4>
+                      <ul class="space-y-2">
+                          <li class="flex items-center">
+                              <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                              <span>Без посредников — напрямую с перевозчиком</span>
+                          </li>
+                          <li class="flex items-center">
+                              <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                              <span>Скидки при регулярных перевозках</span>
+                          </li>
+                          <li class="flex items-center">
+                              <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                              <span>Оплата наличными или переводом</span>
+                          </li>
+                      </ul>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Process: По городу -->
+      <section data-mode="city" class="py-16 bg-gray-50">
           <div class="container mx-auto px-4">
               <h2 class="text-3xl font-bold text-center mb-12">Как я работаю</h2>
               <div class="grid md:grid-cols-4 gap-6">
@@ -732,6 +675,35 @@
                       <div class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">4</div>
                       <h3 class="font-semibold mb-2">Вы платите</h3>
                       <p class="text-sm text-gray-600">Оплата после выполнения работы</p>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Process: Межгород -->
+      <section data-mode="intercity" class="hidden py-16 bg-gray-50">
+          <div class="container mx-auto px-4">
+              <h2 class="text-3xl font-bold text-center mb-12">Как работаю с межгородом</h2>
+              <div class="grid md:grid-cols-4 gap-6">
+                  <div class="text-center">
+                      <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">1</div>
+                      <h3 class="font-semibold mb-2">Заявка</h3>
+                      <p class="text-sm text-gray-600">Описываете груз, маршрут, желаемые сроки</p>
+                  </div>
+                  <div class="text-center">
+                      <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">2</div>
+                      <h3 class="font-semibold mb-2">Расчёт</h3>
+                      <p class="text-sm text-gray-600">Назову точную стоимость и согласую время</p>
+                  </div>
+                  <div class="text-center">
+                      <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">3</div>
+                      <h3 class="font-semibold mb-2">Доставка</h3>
+                      <p class="text-sm text-gray-600">Забираю груз, отчитываюсь о местоположении в пути</p>
+                  </div>
+                  <div class="text-center">
+                      <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">4</div>
+                      <h3 class="font-semibold mb-2">Готово</h3>
+                      <p class="text-sm text-gray-600">Сдаю груз получателю. Оплата наличными или переводом</p>
                   </div>
               </div>
           </div>
@@ -989,573 +961,198 @@
               </div>
           </div>
           
-          <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var track = document.getElementById('slider-track');
-                var slides = document.querySelectorAll('.slider-slide');
-                var dots = document.querySelectorAll('.slider-dot');
-                var prevBtn = document.getElementById('slider-prev');
-                var nextBtn = document.getElementById('slider-next');
-                
-                // Элементы модального окна
-                var modal = document.getElementById('image-modal');
-                var modalImage = document.getElementById('modal-image');
-                var modalClose = document.getElementById('modal-close');
-                var modalPrev = document.getElementById('modal-prev');
-                var modalNext = document.getElementById('modal-next');
-                var modalCurrent = document.getElementById('modal-current');
-                var modalTotal = document.getElementById('modal-total');
-                
-                var currentSlide = 0;
-                var modalCurrentSlide = 0;
-                var totalSlides = slides.length;
-                var SLIDE_INTERVAL = 10000;
-                
-                // Установка общего количества слайдов
-                modalTotal.textContent = totalSlides;
-                
-                // Функция обновления слайдера
-                function updateSlider() {
-                    // Перемещаем трек
-                    var translateValue = 'translateX(-' + (currentSlide * 100) + '%)';
-                    track.style.transform = translateValue;
-                    track.style.webkitTransform = translateValue;
-                    
-                    // Обновляем точки
-                    dots.forEach(function(dot, index) {
-                        if (index === currentSlide) {
-                            dot.classList.add('active');
-                            dot.setAttribute('aria-current', 'true');
-                        } else {
-                            dot.classList.remove('active');
-                            dot.removeAttribute('aria-current');
-                        }
-                    });
-                }
-                
-                // Следующий слайд
-                function nextSlide() {
-                    currentSlide = (currentSlide + 1) % totalSlides;
-                    updateSlider();
-                }
-                
-                // Предыдущий слайд
-                function prevSlide() {
-                    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-                    updateSlider();
-                }
-                
-                // Функция для перезапуска интервала
-                function restartInterval() {
-                    clearInterval(slideInterval);
-                    slideInterval = setInterval(nextSlide, SLIDE_INTERVAL);
-                }
-                
-                // Автопрокрутка
-                var slideInterval = setInterval(nextSlide, SLIDE_INTERVAL);
-                
-                // Обработчики кнопок
-                nextBtn.addEventListener('click', function() {
-                    nextSlide();
-                    restartInterval();
-                });
-                
-                prevBtn.addEventListener('click', function() {
-                    prevSlide();
-                    restartInterval();
-                });
-                
-                // Обработчики точек
-                dots.forEach(function(dot) {
-                    dot.addEventListener('click', function() {
-                        currentSlide = parseInt(this.getAttribute('data-slide'));
-                        updateSlider();
-                        restartInterval();
-                    });
-                });
-                
-                // Пауза при наведении
-                var sliderContainer = document.querySelector('.slider-container');
-                sliderContainer.addEventListener('mouseenter', function() {
-                    clearInterval(slideInterval);
-                });
-                
-                sliderContainer.addEventListener('mouseleave', function() {
-                    restartInterval();
-                });
-                
-                // Обработчик свайпов для мобильных устройств
-                var startX = 0;
-                var startY = 0;
-                var currentTranslate = 0;
-                var isDragging = false;
-                var dragDirection = null; // 'horizontal' | 'vertical' | null
-                
-                track.addEventListener('touchstart', function(e) {
-                    startX = e.touches[0].clientX;
-                    startY = e.touches[0].clientY;
-                    isDragging = true;
-                    dragDirection = null;
-                    
-                    // Получаем реальную текущую позицию трека (важно при касании во время CSS-перехода)
-                    var computedStyle = window.getComputedStyle(track);
-                    var matrix = computedStyle.transform || computedStyle.webkitTransform;
-                    if (matrix && matrix !== 'none') {
-                        var matrixValues = matrix.match(/matrix.*\((.+)\)/);
-                        if (matrixValues) {
-                            var values = matrixValues[1].split(', ');
-                            var translateX = parseFloat(values[4]) || 0;
-                            var sliderWidth = sliderContainer.offsetWidth;
-                            currentTranslate = (translateX / sliderWidth) * 100;
-                            // Синхронизируем currentSlide с фактической позицией
-                            currentSlide = Math.round(-currentTranslate / 100);
-                        } else {
-                            currentTranslate = -currentSlide * 100;
-                        }
-                    } else {
-                        currentTranslate = -currentSlide * 100;
-                    }
-                    
-                    track.classList.add('dragging');
-                    // Фиксируем трек на текущей визуальной позиции
-                    track.style.transform = 'translateX(' + currentTranslate + '%)';
-                    track.style.webkitTransform = 'translateX(' + currentTranslate + '%)';
-                    clearInterval(slideInterval);
-                }, { passive: true });
-                
-                track.addEventListener('touchmove', function(e) {
-                    if (!isDragging) return;
-                    
-                    var currentX = e.touches[0].clientX;
-                    var currentY = e.touches[0].clientY;
-                    var diffX = currentX - startX;
-                    var diffY = currentY - startY;
-                    
-                    // Определяем направление свайпа при первом движении
-                    if (dragDirection === null && (Math.abs(diffX) > 5 || Math.abs(diffY) > 5)) {
-                        if (Math.abs(diffX) > Math.abs(diffY)) {
-                            dragDirection = 'horizontal';
-                        } else {
-                            dragDirection = 'vertical';
-                            isDragging = false;
-                            track.classList.remove('dragging');
-                            return;
-                        }
-                    }
-                    
-                    if (dragDirection !== 'horizontal') return;
-                    
-                    // Предотвращаем вертикальный скролл при горизонтальном свайпе
-                    e.preventDefault();
-                    
-                    // Перемещаем трек вслед за пальцем
-                    var sliderWidth = sliderContainer.offsetWidth;
-                    var dragPercent = (diffX / sliderWidth) * 100;
-                    
-                    // Замедляем перетаскивание на краях (первый/последний слайд)
-                    if ((currentSlide === 0 && diffX > 0) || (currentSlide === totalSlides - 1 && diffX < 0)) {
-                        dragPercent = dragPercent * 0.3;
-                    }
-                    
-                    var translateValue = currentTranslate + dragPercent;
-                    track.style.transform = 'translateX(' + translateValue + '%)';
-                    track.style.webkitTransform = 'translateX(' + translateValue + '%)';
-                }, { passive: false });
-                
-                track.addEventListener('touchend', function(e) {
-                    var wasDragging = dragDirection === 'horizontal';
-                    
-                    isDragging = false;
-                    dragDirection = null;
-                    
-                    if (!wasDragging) {
-                        // Не было горизонтального свайпа — привязываем к ближайшему слайду
-                        track.classList.remove('dragging');
-                        updateSlider();
-                        restartInterval();
-                        return;
-                    }
-                    
-                    var endX = e.changedTouches[0].clientX;
-                    var diffX = endX - startX;
-                    var sliderWidth = sliderContainer.offsetWidth;
-                    var threshold = sliderWidth * 0.15; // 15% ширины слайдера
-                    
-                    // Определяем целевой слайд
-                    if (Math.abs(diffX) > threshold) {
-                        if (diffX < 0 && currentSlide < totalSlides - 1) {
-                            currentSlide++;
-                        } else if (diffX > 0 && currentSlide > 0) {
-                            currentSlide--;
-                        }
-                    }
-                    
-                    // Убираем dragging и принудительно задаём reflow,
-                    // чтобы transition корректно сработал от текущей позиции
-                    track.classList.remove('dragging');
-                    void track.offsetWidth; // force reflow
-                    updateSlider();
-                    
-                    restartInterval();
-                }, { passive: true });
-                
-                // Обработка отмены касания
-                track.addEventListener('touchcancel', function() {
-                    isDragging = false;
-                    dragDirection = null;
-                    track.classList.remove('dragging');
-                    updateSlider();
-                    restartInterval();
-                }, { passive: true });
-                
-                // ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА
-                
-                // Открытие модального окна
-                function openModal(slideIndex) {
-                    modalCurrentSlide = slideIndex;
-                    updateModal();
-                    modal.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                    
-                    // Отключить автопрокрутку слайдера
-                    clearInterval(slideInterval);
-                }
-                
-                // Закрытие модального окна
-                function closeModal() {
-                    modal.classList.remove('active');
-                    document.body.style.overflow = 'auto';
-                    
-                    // Восстановить автопрокрутку слайдера
-                    restartInterval();
-                }
-                
-                // Обновление модального окна
-                function updateModal() {
-                    var slide = slides[modalCurrentSlide];
-                    var imageSrc = slide.getAttribute('data-image-src');
-                    var imageAlt = slide.querySelector('img').getAttribute('alt');
-                    
-                    modalImage.src = imageSrc;
-                    modalImage.alt = imageAlt;
-                    modalCurrent.textContent = modalCurrentSlide + 1;
-                    
-                    // Обновляем текущий слайд в основном слайдере
-                    currentSlide = modalCurrentSlide;
-                    updateSlider();
-                }
-                
-                // Следующее изображение в модальном окне
-                function nextModalImage() {
-                    modalCurrentSlide = (modalCurrentSlide + 1) % totalSlides;
-                    updateModal();
-                }
-                
-                // Предыдущее изображение в модальном окне
-                function prevModalImage() {
-                    modalCurrentSlide = (modalCurrentSlide - 1 + totalSlides) % totalSlides;
-                    updateModal();
-                }
-                
-                // Обработчики кликов на слайды для открытия модального окна
-                var touchMoved = false;
-                
-                slides.forEach(function(slide, index) {
-                    slide.addEventListener('touchstart', function() {
-                        touchMoved = false;
-                    }, { passive: true });
-                    
-                    slide.addEventListener('touchmove', function() {
-                        touchMoved = true;
-                    }, { passive: true });
-                    
-                    slide.addEventListener('click', function(e) {
-                        // Не открываем модальное окно если был свайп или клик по кнопке
-                        if (touchMoved || e.target.closest('.slider-btn')) return;
-                        openModal(index);
-                    });
-                });
-                
-                // Обработчики для модального окна
-                modalClose.addEventListener('click', closeModal);
-                modalPrev.addEventListener('click', prevModalImage);
-                modalNext.addEventListener('click', nextModalImage);
-                
-                // Закрытие по клику на фон
-                modal.addEventListener('click', function(e) {
-                    if (e.target === modal) {
-                        closeModal();
-                    }
-                });
-                
-                // Закрытие по клавише ESC
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape' && modal.classList.contains('active')) {
-                        closeModal();
-                    }
-                    
-                    // Навигация стрелками в модальном окне
-                    if (modal.classList.contains('active')) {
-                        if (e.key === 'ArrowLeft') {
-                            prevModalImage();
-                        } else if (e.key === 'ArrowRight') {
-                            nextModalImage();
-                        }
-                    }
-                });
-                
-                // Добавляем плавную загрузку изображений
-                var images = document.querySelectorAll('.slider-slide img, .modal-image');
-                images.forEach(function(img) {
-                    if (img.complete) {
-                        img.classList.add('loaded');
-                    } else {
-                        img.addEventListener('load', function() {
-                            this.classList.add('loaded');
-                        });
-                        
-                        img.addEventListener('error', function() {
-                            this.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Crect width='800' height='500' fill='%236b7280'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-family='sans-serif' font-size='24'%3EИзображение%3C/text%3E%3C/svg%3E";
-                        });
-                    }
-                });
-                
-                // Инициализация
-                updateSlider();
-            });
-            </script>
+          <script src="{{ url_for('static', filename='js/slider.js') }}"></script>
+      </section>
+
+      <!-- Калькулятор: По городу -->
+      <section id="calculator-city" data-mode="city" class="py-16 bg-gray-50">
+          <div class="container mx-auto px-4">
+              <div class="max-w-2xl mx-auto">
+                  <h2 class="text-3xl font-bold text-center mb-3">Рассчитайте стоимость</h2>
+                  <p class="text-gray-600 text-center mb-8">Примерная стоимость перевозки по Екатеринбургу. Точную цену назову по телефону.</p>
+
+                  <div id="calc-city" class="calc-card">
+                      <!-- Время работы -->
+                      <div class="mb-6">
+                          <label class="calc-label">
+                              Сколько часов нужна машина?
+                              <span class="text-gray-400 font-normal">(минимум 2 часа)</span>
+                          </label>
+                          <div class="flex items-center justify-between mb-1">
+                              <span class="text-sm text-gray-400">2 ч</span>
+                              <span class="text-lg font-bold text-blue-600"><span id="calc-city-hours-value">3</span> ч</span>
+                              <span class="text-sm text-gray-400">10 ч</span>
+                          </div>
+                          <input type="range" id="calc-city-hours" class="calc-range" min="2" max="10" value="3" step="1">
+                      </div>
+
+                      <!-- Грузчики -->
+                      <div class="mb-6">
+                          <div class="flex items-center justify-between">
+                              <label class="calc-label mb-0">Нужны грузчики?</label>
+                              <label class="calc-toggle">
+                                  <input type="checkbox" id="calc-city-movers">
+                                  <span class="calc-toggle-slider"></span>
+                              </label>
+                          </div>
+                          <div id="calc-city-movers-options" class="mt-4" style="display: none;">
+                              <label class="calc-label">
+                                  Сколько человеко-часов работы грузчиков?
+                              </label>
+                              <div class="flex items-center justify-between mb-1">
+                                  <span class="text-sm text-gray-400">1 ч</span>
+                                  <span class="text-lg font-bold text-blue-600"><span id="calc-city-movers-hours-value">2</span> ч</span>
+                                  <span class="text-sm text-gray-400">8 ч</span>
+                              </div>
+                              <input type="range" id="calc-city-movers-hours" class="calc-range" min="1" max="8" value="2" step="1">
+                          </div>
+                      </div>
+
+                      <!-- Результат -->
+                      <div id="calc-city-result" class="calc-result" style="display: none;">
+                          <p class="text-sm text-gray-500 mb-1">Примерная стоимость:</p>
+                          <p class="calc-result-price">
+                              <span id="calc-city-result-min">1 350</span> — <span id="calc-city-result-max">1 553</span> ₽
+                          </p>
+                          <p id="calc-city-details" class="calc-result-details"></p>
+                          <p class="calc-result-note">* Цена ориентировочная. Точную стоимость назову по телефону после уточнения деталей.</p>
+                      </div>
+
+                      <!-- Кнопка -->
+                      <div class="mt-6 text-center">
+                          <a href="#contact" class="inline-block bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition">
+                              Узнать точную цену
+                          </a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <!-- Калькулятор: Межгород -->
+      <section id="calculator-intercity" data-mode="intercity" class="hidden py-16 bg-gray-50">
+          <div class="container mx-auto px-4">
+              <div class="max-w-2xl mx-auto">
+                  <h2 class="text-3xl font-bold text-center mb-3">Рассчитайте стоимость маршрута</h2>
+                  <p class="text-gray-600 text-center mb-8">Примерный расчёт междугородней перевозки из Екатеринбурга.</p>
+
+                  <div id="calc-intercity" class="calc-card">
+                      <!-- Маршрут -->
+                      <div class="mb-6">
+                          <label class="calc-label">Откуда забрать?</label>
+                          <div class="relative">
+                              <input type="text" id="calc-intercity-from" class="calc-input" 
+                                     placeholder="Например: Екатеринбург, ул. Ленина 50" 
+                                     value="Екатеринбург" autocomplete="off">
+                              <div id="calc-suggest-from" class="calc-suggest-list"></div>
+                          </div>
+                      </div>
+                      <div class="mb-6">
+                          <label class="calc-label">Куда доставить?</label>
+                          <div class="relative">
+                              <input type="text" id="calc-intercity-to" class="calc-input" 
+                                     placeholder="Например: Челябинск, ул. Кирова 100" autocomplete="off">
+                              <div id="calc-suggest-to" class="calc-suggest-list"></div>
+                          </div>
+                          <div id="calc-intercity-distance-info" class="mt-2 text-sm text-gray-500" style="display: none;">
+                              📍 Расстояние: <span id="calc-intercity-distance-value" class="font-semibold text-emerald-600">—</span> км
+                              <span id="calc-intercity-distance-loader" class="ml-2" style="display: none;">⏳</span>
+                          </div>
+                      </div>
+
+                      <!-- Грузчики -->
+                      <div class="mb-6">
+                          <div class="flex items-center justify-between">
+                              <label class="calc-label mb-0">Нужны грузчики?</label>
+                              <label class="calc-toggle green">
+                                  <input type="checkbox" id="calc-intercity-movers">
+                                  <span class="calc-toggle-slider"></span>
+                              </label>
+                          </div>
+                          <div id="calc-intercity-movers-options" class="mt-4" style="display: none;">
+                              <label class="calc-label">
+                                  Сколько человеко-часов работы грузчиков? <span class="text-gray-400 font-normal">(на погрузке + разгрузке)</span>
+                              </label>
+                              <div class="flex items-center justify-between mb-1">
+                                  <span class="text-sm text-gray-400">1 ч</span>
+                                  <span class="text-lg font-bold text-emerald-600"><span id="calc-intercity-movers-hours-value">2</span> ч</span>
+                                  <span class="text-sm text-gray-400">8 ч</span>
+                              </div>
+                              <input type="range" id="calc-intercity-movers-hours" class="calc-range green" min="1" max="8" value="2" step="1">
+                          </div>
+                      </div>
+
+                      <!-- Результат -->
+                      <div id="calc-intercity-result" class="calc-result green" style="display: none;">
+                          <p class="text-sm text-gray-500 mb-1">Примерная стоимость (<span id="calc-intercity-km-display">0</span> км):</p>
+                          <p class="calc-result-price">
+                              <span id="calc-intercity-result-min">0</span> — <span id="calc-intercity-result-max">0</span> ₽
+                          </p>
+                          <p id="calc-intercity-details" class="calc-result-details"></p>
+                          <p class="calc-result-note">* Цена ориентировочная. Точную стоимость назову после уточнения маршрута и деталей.</p>
+                      </div>
+
+                      <!-- Кнопка -->
+                      <div class="mt-6 text-center">
+                          <a href="#contact" class="inline-block bg-emerald-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-emerald-700 transition">
+                              Узнать точную цену
+                          </a>
+                      </div>
+                  </div>
+              </div>
+          </div>
       </section>
 
       <!-- Contact -->
       <section id="contact" class="py-16 bg-white">
           <div class="container mx-auto px-4">
               <div class="max-w-2xl mx-auto">
-                  <h2 class="text-3xl font-bold text-center mb-8">Рассчитать стоимость перевозки</h2>
+                  <h2 class="text-3xl font-bold text-center mb-4">Перезвоню за 15 минут</h2>
                   <p class="text-gray-600 text-center mb-8">
-                      Опишите что нужно перевезти, адреса и этажи. Перезвоню в течение 15 минут.
+                      Оставьте номер — перезвоню, уточню детали и назову точную стоимость.
                   </p>
                   
-                  <form id="contact-form" class="space-y-6">
+                  <form id="contact-form" class="space-y-4">
                       <div class="relative">
-                          <label class="block text-sm font-medium text-gray-700 mb-2">Ваше имя *</label>
-                          <input type="text" name="name" id="name-input" required 
-                                class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-                                placeholder="Иван Иванов">
-                          <span id="name-check" class="absolute right-3 top-10 text-green-500 hidden">✓</span>
-                      </div>
-                      <div class="relative">
-                          <label class="block text-sm font-medium text-gray-700 mb-2">Телефон *</label>
+                          <label class="block text-sm font-medium text-gray-700 mb-2">Ваш телефон *</label>
                           <input type="tel" name="phone" id="phone-input" required 
-                                class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                                class="w-full px-4 py-4 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-lg"
                                 placeholder="+7 (999) 123-45-67">
-                          <span id="phone-check" class="absolute right-3 top-10 text-green-500 hidden">✓</span>
+                          <span id="phone-check" class="absolute right-3 top-11 text-green-500 hidden">✓</span>
                       </div>
                       <div class="relative">
-                          <label class="block text-sm font-medium text-gray-700 mb-2">Что и куда перевезти?</label>
-                          <textarea name="message" id="message-input" rows="4" required maxlength="1000"
+                          <label class="block text-sm font-medium text-gray-700 mb-2">Что перевезти? <span class="text-gray-400 font-normal">(необязательно)</span></label>
+                          <textarea name="message" id="message-input" rows="2" maxlength="1000"
                                     class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-                                    placeholder="Например: переезд из 2-комнатной квартиры с 3 этажа на 5 этаж, адреса..."></textarea>
-                          <span id="message-check" class="absolute right-3 top-12 text-green-500 hidden">✓</span>
+                                    placeholder="Например: переезд из 2-комнатной квартиры, 3 этаж без лифта"></textarea>
                       </div>
-                      <button type="submit" id="submit-btn" disabled class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
-                          Отправить заявку
+                      <button type="submit" id="submit-btn" disabled class="w-full bg-blue-600 text-white font-semibold py-4 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed text-lg">
+                          Перезвоните мне
                       </button>
                       <p class="text-xs text-gray-500 text-center">
                           Нажимая кнопку, вы соглашаетесь на обработку персональных данных.
                       </p>
                   </form>
                   
-                  <script>
-                  // Телефонная маска
-                  document.addEventListener('DOMContentLoaded', function() {
-                      var phoneInput = document.getElementById('phone-input');
-                      
-                      phoneInput.value = '+7 ';
-                      
-                      phoneInput.addEventListener('focus', function() {
-                          if (this.value === '') {
-                              this.value = '+7 ';
-                          }
-                      });
-                      
-                      phoneInput.addEventListener('keydown', function(e) {
-                          if (this.selectionStart < 3 && e.key === 'Backspace') {
-                              e.preventDefault();
-                          }
-                          if (this.selectionStart < 3 && e.key === 'Delete') {
-                              e.preventDefault();
-                          }
-                      });
-                      
-                      phoneInput.addEventListener('input', function() {
-                          if (!this.value.startsWith('+7')) {
-                              this.value = '+7 ' + this.value.replace(/[^\d]/g, '');
-                          }
-                          
-                          var numbers = this.value.replace(/\D/g, '').substring(1);
-                          if (numbers.length > 0) {
-                              var formatted = '+7 ';
-                              
-                              if (numbers.length <= 3) {
-                                  formatted += numbers;
-                              } else if (numbers.length <= 6) {
-                                  formatted += '(' + numbers.substring(0,3) + ') ' + numbers.substring(3);
-                              } else if (numbers.length <= 8) {
-                                  formatted += '(' + numbers.substring(0,3) + ') ' + numbers.substring(3,6) + '-' + numbers.substring(6);
-                              } else {
-                                  formatted += '(' + numbers.substring(0,3) + ') ' + numbers.substring(3,6) + '-' + numbers.substring(6,8) + '-' + numbers.substring(8,10);
-                              }
-                              
-                              this.value = formatted;
-                          }
-                      });
-                      
-                      phoneInput.addEventListener('blur', function() {
-                          var cleanNumber = this.value.replace(/\D/g, '');
-                          if (cleanNumber.length < 2) {
-                              this.value = '+7 ';
-                          }
-                      });
-                  });
+                  <div class="mt-6 flex items-center justify-center gap-4">
+                      <span class="text-gray-400 text-sm">или напишите сами:</span>
+                      <a href="https://wa.me/79226141249?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D1%81%D1%82%D0%BE%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D1%8C%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B7%D0%BA%D0%B8" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 bg-green-50 text-green-700 font-medium px-4 py-2 rounded-lg hover:bg-green-100 transition border border-green-200">
+                          <img src="{{ url_for('static', filename='icons/whatsapp.svg') }}" alt="WhatsApp" class="w-5 h-5" style="color: #25D366" loading="lazy" />
+                          WhatsApp
+                      </a>
+                      <a href="https://t.me/+79226141249" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 font-medium px-4 py-2 rounded-lg hover:bg-blue-100 transition border border-blue-200">
+                          <img src="{{ url_for('static', filename='icons/telegram.svg') }}" alt="Telegram" class="w-5 h-5" loading="lazy" />
+                          Telegram
+                      </a>
+                  </div>
                   
-                  // Валидация формы в реальном времени - кнопка активна только при валидных данных
-                  document.addEventListener('DOMContentLoaded', function() {
-                      var form = document.getElementById('contact-form');
-                      var submitBtn = document.getElementById('submit-btn');
-                      var nameInput = document.getElementById('name-input');
-                      var phoneInput = document.getElementById('phone-input');
-                      var messageInput = document.getElementById('message-input');
-                      
-                      // Элементы галочек
-                      var nameCheck = document.getElementById('name-check');
-                      var phoneCheck = document.getElementById('phone-check');
-                      var messageCheck = document.getElementById('message-check');
-                      
-                      function updateFieldStatus(input, checkMark, isValid, hasValue) {
-                          if (isValid) {
-                              input.classList.remove('border-red-400');
-                              input.classList.add('border-green-400');
-                              checkMark.classList.remove('hidden');
-                          } else if (hasValue) {
-                              input.classList.remove('border-green-400');
-                              input.classList.add('border-red-400');
-                              checkMark.classList.add('hidden');
-                          } else {
-                              input.classList.remove('border-green-400', 'border-red-400');
-                              checkMark.classList.add('hidden');
-                          }
-                      }
-                      
-                      function validateForm() {
-                          var name = nameInput.value.trim();
-                          var phone = phoneInput.value.trim();
-                          var message = messageInput.value.trim();
-                          var phoneDigits = phone.replace(/\D/g, '');
-                          
-                          // Проверяем все условия валидности
-                          var isNameValid = name.length >= 2;
-                          var isPhoneValid = phoneDigits.length >= 11; // +7 и 10 цифр номера
-                          var isMessageValid = message.length >= 1;
-                          
-                          // Визуальная обратная связь для каждого поля
-                          updateFieldStatus(nameInput, nameCheck, isNameValid, name.length > 0);
-                          updateFieldStatus(phoneInput, phoneCheck, isPhoneValid, phoneDigits.length > 1);
-                          updateFieldStatus(messageInput, messageCheck, isMessageValid, message.length > 0);
-                          
-                          // Активируем кнопку только если все поля валидны
-                          if (isNameValid && isPhoneValid && isMessageValid) {
-                              submitBtn.disabled = false;
-                          } else {
-                              submitBtn.disabled = true;
-                          }
-                      }
-                      
-                      // Слушаем изменения во всех полях формы
-                      nameInput.addEventListener('input', validateForm);
-                      phoneInput.addEventListener('input', validateForm);
-                      messageInput.addEventListener('input', validateForm);
-                      
-                      // Начальная проверка
-                      validateForm();
-                  });
-                  
-                  // AJAX отправка формы на Flask-сервер
-                    document.addEventListener('DOMContentLoaded', function() {
-                        var form = document.getElementById('contact-form');
-                        
-                        form.addEventListener('submit', function(e) {
-                            e.preventDefault();
-                            
-                            var nameInput = form.querySelector('[name="name"]');
-                            var phoneInput = form.querySelector('[name="phone"]');
-                            var name = nameInput.value.trim();
-                            var phone = phoneInput.value.trim();
-                            
-                            var formData = new FormData(this);
-                            var submitBtn = document.getElementById('submit-btn');
-                            var originalText = submitBtn.textContent;
-                            
-                            submitBtn.textContent = 'Отправляем...';
-                            submitBtn.disabled = true;
-                            
-                            fetch('/tg-lead', {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(function(response) {
-                                return response.json();
-                            })
-                            .then(function(data) {
-                                if (data.ok) {
-                                  // ОТПРАВКА СОБЫТИЯ В ЯНДЕКС.МЕТРИКУ
-                                  if (typeof ym !== 'undefined') {
-                                      ym(106091724, 'reachGoal', 'form_submit', {
-                                          formName: 'contact_form',
-                                          userName: name,
-                                          userPhone: phone
-                                      });
-                                  }
-                                    // Используем имя пользователя в сообщении об успехе
-                                    var formattedName = name.split(' ')[0];
-                                    var capitalizedName = formattedName.charAt(0).toUpperCase() + formattedName.slice(1);
-                                    var successHTML = '<div class="bg-green-50 border border-green-200 rounded-xl p-8 text-center">' +
-                                        '<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">' +
-                                            '<span class="text-green-600 text-3xl">✓</span>' +
-                                        '</div>' +
-                                        '<h3 class="text-xl font-semibold text-green-800 mb-3">Спасибо, ' + capitalizedName + '!</h3>' +
-                                        '<p class="text-green-700 mb-2">Ваша заявка успешно отправлена</p>' +
-                                        '<p class="text-green-700 mb-6">Я свяжусь с вами в течение 15 минут</p>' +
-                                        '<button onclick="location.reload()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition">' +
-                                            'Отправить ещё одну заявку' +
-                                        '</button>' +
-                                    '</div>';
-                                    
-                                    form.innerHTML = successHTML;
-                                } else {
-                                    alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
-                                    submitBtn.textContent = originalText;
-                                    submitBtn.disabled = false;
-                                }
-                            })
-                            .catch(function(error) {
-                                alert('Ошибка отправки формы. Попробуйте позвонить напрямую.');
-                                submitBtn.textContent = originalText;
-                                submitBtn.disabled = false;
-                            });
-                        });
-                    });
-                  </script>
+                  <script src="{{ url_for('static', filename='js/form.js') }}"></script>
                   
                   <div class="mt-12 pt-8 border-t border-gray-200 text-center">
-                      <p class="font-medium mb-2">Или свяжитесь напрямую:</p>
+                      <p class="font-medium mb-2">Или позвоните напрямую:</p>
                       <a href="tel:+79226141249" class="text-blue-600 font-semibold text-xl hover:text-blue-700">
                           +7 (922) 614-12-49
                       </a>
-                        <p class="mt-1">
-                            <a href="https://t.me/+79226141249" class="text-gray-600 hover:text-gray-800 inline-flex items-center justify-center" aria-label="Перейти в Telegram" title="Перейти в Telegram" target="_blank" rel="noopener noreferrer">
-                                <img src="{{ url_for('static', filename='icons/telegram.svg') }}" alt="Telegram" class="w-9 h-9" loading="lazy" />
-                            </a>
-                        </p>
                   </div>
               </div>
           </div>
@@ -1572,26 +1169,20 @@
               <p class="text-gray-500 text-sm mt-2">Работаю официально, есть все необходимые документы</p>
           </div>
       </footer>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          // Отслеживание кликов по телефону
-          document.querySelectorAll('a[href^="tel:"]').forEach(function(link) {
-              link.addEventListener('click', function() {
-                  if (typeof ym !== 'undefined') {
-                      ym(106091724, 'reachGoal', 'phone_click');
-                  }
-              });
-          });
-          
-          // Отслеживание кликов по Telegram
-          document.querySelectorAll('a[href*="t.me"]').forEach(function(link) {
-              link.addEventListener('click', function() {
-                  if (typeof ym !== 'undefined') {
-                      ym(106091724, 'reachGoal', 'telegram_click');
-                  }
-              });
-          });
-      });
-    </script>
+    <!-- Sticky CTA для мобильных -->
+    <div class="sticky-cta" id="sticky-cta">
+        <a href="tel:+79226141249" class="sticky-cta-btn sticky-cta-call">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            Позвонить
+        </a>
+        <a href="https://wa.me/79226141249?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D1%81%D1%82%D0%BE%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D1%8C%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B7%D0%BA%D0%B8" target="_blank" rel="noopener noreferrer" class="sticky-cta-btn sticky-cta-wa">
+            <img src="{{ url_for('static', filename='icons/whatsapp.svg') }}" alt="" class="w-5 h-5 invert" />
+            WhatsApp
+        </a>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/calculator.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mode-switcher.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
   </body>
 </html>
