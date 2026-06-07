@@ -5,6 +5,11 @@ import threading
 import time
 import logging
 import math
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.utils import formataddr
+from email.header import Header
 from functools import lru_cache
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -25,11 +30,46 @@ logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
 app = Flask(__name__)
 
-# Настройки для отправки в Telegram
-TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
-TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+# Настройки для отправки заявок на email (SMTP)
+SMTP_HOST = os.getenv('SMTP_HOST', '')
+SMTP_PORT = int(os.getenv('SMTP_PORT', '465'))
+SMTP_USER = os.getenv('SMTP_USER', '')
+SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')
+# Адрес, с которого приходит письмо (по умолчанию совпадает с логином SMTP)
+MAIL_FROM = os.getenv('MAIL_FROM', SMTP_USER)
+# Адрес(а) получателя заявок. Несколько — через запятую.
+MAIL_TO = os.getenv('MAIL_TO', SMTP_USER)
 SITE_NAME = os.getenv('SITE_NAME', '')
 YANDEX_MAPS_KEY = os.getenv('YANDEX_MAPS_KEY', '')
+
+
+def send_lead_email(subject, text_body, html_body):
+    """Отправляет письмо с заявкой через SMTP.
+
+    Поддерживает SSL (порт 465) и STARTTLS (порт 587 и др.).
+    Возвращает True при успехе, иначе бросает исключение.
+    """
+    recipients = [addr.strip() for addr in MAIL_TO.split(',') if addr.strip()]
+
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = str(Header(subject, 'utf-8'))
+    msg['From'] = formataddr((str(Header('Заявки с сайта', 'utf-8')), MAIL_FROM))
+    msg['To'] = ', '.join(recipients)
+
+    msg.attach(MIMEText(text_body, 'plain', 'utf-8'))
+    msg.attach(MIMEText(html_body, 'html', 'utf-8'))
+
+    if SMTP_PORT == 465:
+        with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, timeout=10) as server:
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.sendmail(MAIL_FROM, recipients, msg.as_string())
+    else:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.sendmail(MAIL_FROM, recipients, msg.as_string())
+
+    return True
 
 # Флаг для предотвращения повторного запуска самопинга
 _keep_alive_started = False
@@ -98,56 +138,73 @@ def index():
     return render_template('index.html', yandex_maps_key=YANDEX_MAPS_KEY)
 
 @app.route('/tg-lead', methods=['POST'])
-def send_to_telegram():
+def send_lead():
     try:
         # Получаем данные из формы
         name = request.form.get('name', '').strip()
         phone = request.form.get('phone', '').strip()
         message = request.form.get('message', '').strip()
-        
+
         # Проверяем обязательные поля (только телефон обязателен)
         if not phone:
             return jsonify({'ok': False, 'error': 'Укажите номер телефона'})
-        
+
+        # Проверяем, что SMTP настроен
+        if not SMTP_HOST or not SMTP_USER or not SMTP_PASSWORD:
+            logger.error("⚠️ SMTP не настроен (SMTP_HOST/SMTP_USER/SMTP_PASSWORD)")
+            return jsonify({'ok': False, 'error': 'Отправка заявок временно недоступна'})
+
         # Форматируем телефон (убираем пробелы и дефисы)
         phone_clean = phone.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
 
-        # Формируем сообщение для Telegram
+        # Время заявки (Екатеринбург, UTC+5)
         utc_now = datetime.utcnow()
         current_time_utc5 = utc_now + timedelta(hours=5)
         current_time = current_time_utc5.strftime('%d.%m.%Y %H:%M')
 
-        text = f"🚚 *Новая заявка на грузоперевозку*\n\n"
-        # text += f"👤 *Имя:* {name}\n"
-        text += f"📞 *Телефон:* {phone_clean}\n"
-        # text += f"📦 *Описание груза:* {message}\n"
-        text += f"⏰ *Время заявки:* {current_time}\n"
-        text += f"\n📍 *Источник:* Сайт {SITE_NAME}"
-        
-        # Отправляем в Telegram
-        url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
-        data = {
-            'chat_id': TELEGRAM_CHAT_ID,
-            'text': text,
-            'parse_mode': 'Markdown',
-            'disable_web_page_preview': True
-        }
-        
-        response = requests.post(url, data=data, timeout=10)
-        
-        if response.status_code == 200:
-            # Логируем успешную отправку
-            logger.info(f"[{current_time}] Заявка отправлена: {name}, {phone_clean}")
-            return jsonify({'ok': True, 'message': 'Заявка отправлена!'})
-        else:
-            error_msg = f"Ошибка Telegram API: {response.status_code}"
-            logger.error(f"[{current_time}] {error_msg}")
-            return jsonify({'ok': False, 'error': error_msg})
-            
-    except requests.exceptions.Timeout:
-        return jsonify({'ok': False, 'error': 'Таймаут соединения с Telegram'})
-    except requests.exceptions.ConnectionError:
-        return jsonify({'ok': False, 'error': 'Ошибка подключения к Telegram'})
+        subject = f"🚚 Новая заявка: {phone_clean}"
+
+        # Текстовая версия письма
+        text_body = (
+            "Новая заявка на грузоперевозку\n\n"
+            f"Телефон: {phone_clean}\n"
+            f"Время заявки: {current_time} (Екб)\n"
+            f"Источник: Сайт {SITE_NAME}\n"
+        )
+
+        # HTML-версия письма
+        html_body = f"""\
+<html>
+  <body style="font-family: Arial, sans-serif; color: #1f2937;">
+    <h2 style="margin: 0 0 16px;">🚚 Новая заявка на грузоперевозку</h2>
+    <table style="border-collapse: collapse; font-size: 15px;">
+      <tr>
+        <td style="padding: 4px 12px 4px 0; color: #6b7280;">📞 Телефон:</td>
+        <td style="padding: 4px 0;"><a href="tel:{phone_clean}" style="color: #2563eb; font-weight: bold; text-decoration: none;">{phone_clean}</a></td>
+      </tr>
+      <tr>
+        <td style="padding: 4px 12px 4px 0; color: #6b7280;">⏰ Время заявки:</td>
+        <td style="padding: 4px 0;">{current_time} (Екб)</td>
+      </tr>
+      <tr>
+        <td style="padding: 4px 12px 4px 0; color: #6b7280;">📍 Источник:</td>
+        <td style="padding: 4px 0;">Сайт {SITE_NAME}</td>
+      </tr>
+    </table>
+  </body>
+</html>"""
+
+        send_lead_email(subject, text_body, html_body)
+
+        logger.info(f"[{current_time}] Заявка отправлена на email: {phone_clean}")
+        return jsonify({'ok': True, 'message': 'Заявка отправлена!'})
+
+    except smtplib.SMTPAuthenticationError:
+        logger.error(f"[{datetime.now()}] Ошибка авторизации SMTP")
+        return jsonify({'ok': False, 'error': 'Ошибка отправки. Попробуйте позвонить напрямую.'})
+    except (smtplib.SMTPException, OSError) as e:
+        logger.error(f"[{datetime.now()}] Ошибка SMTP: {str(e)}")
+        return jsonify({'ok': False, 'error': 'Ошибка отправки. Попробуйте позвонить напрямую.'})
     except Exception as e:
         error_msg = f"Неизвестная ошибка: {str(e)}"
         logger.error(f"[{datetime.now()}] {error_msg}")
@@ -352,10 +409,10 @@ def sitemap():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     
-    # Проверяем, есть ли переменные окружения для Telegram
-    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        logger.warning("⚠️ ВНИМАНИЕ: TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID не установлены!")
-        logger.warning("⚠️ Отправка заявок в Telegram будет недоступна.")
+    # Проверяем, есть ли переменные окружения для SMTP
+    if not SMTP_HOST or not SMTP_USER or not SMTP_PASSWORD:
+        logger.warning("⚠️ ВНИМАНИЕ: SMTP_HOST / SMTP_USER / SMTP_PASSWORD не установлены!")
+        logger.warning("⚠️ Отправка заявок на email будет недоступна.")
     
     # Определяем режим запуска
     debug_mode = os.environ.get('FLASK_ENV') == 'development' or os.environ.get('DEBUG') == 'True'
