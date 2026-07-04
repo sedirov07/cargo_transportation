@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, Response
 import requests
 import os
 import threading
@@ -6,6 +6,7 @@ import time
 import logging
 import math
 import smtplib
+import json
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formataddr
@@ -13,6 +14,8 @@ from email.header import Header
 from functools import lru_cache
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from pathlib import Path
+from pywebpush import webpush, WebPushException
 
 # Загружаем переменные окружения
 load_dotenv()
@@ -41,6 +44,13 @@ MAIL_FROM = os.getenv('MAIL_FROM', SMTP_USER)
 MAIL_TO = os.getenv('MAIL_TO', SMTP_USER)
 SITE_NAME = os.getenv('SITE_NAME', '')
 YANDEX_MAPS_KEY = os.getenv('YANDEX_MAPS_KEY', '')
+VAPID_PUBLIC_KEY = os.getenv('VAPID_PUBLIC_KEY', '')
+VAPID_PRIVATE_KEY = os.getenv('VAPID_PRIVATE_KEY', '')
+VAPID_CLAIMS_SUBJECT = os.getenv('VAPID_CLAIMS_SUBJECT', 'mailto:admin@example.com')
+ADMIN_PUSH_TOKEN = os.getenv('ADMIN_PUSH_TOKEN', '')
+
+BASE_DIR = Path(__file__).resolve().parent
+PUSH_SUBSCRIPTIONS_FILE = BASE_DIR / 'push_subscriptions.json'
 
 
 def send_lead_email(subject, text_body, html_body):
@@ -70,6 +80,81 @@ def send_lead_email(subject, text_body, html_body):
             server.sendmail(MAIL_FROM, recipients, msg.as_string())
 
     return True
+
+
+def push_enabled():
+    return bool(VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY and VAPID_CLAIMS_SUBJECT)
+
+
+def load_push_subscriptions():
+    if not PUSH_SUBSCRIPTIONS_FILE.exists():
+        return []
+
+    try:
+        with PUSH_SUBSCRIPTIONS_FILE.open('r', encoding='utf-8') as fh:
+            data = json.load(fh)
+            return data if isinstance(data, list) else []
+    except (OSError, json.JSONDecodeError):
+        logger.exception("Не удалось прочитать push_subscriptions.json")
+        return []
+
+
+def save_push_subscriptions(subscriptions):
+    with PUSH_SUBSCRIPTIONS_FILE.open('w', encoding='utf-8') as fh:
+        json.dump(subscriptions, fh, ensure_ascii=False, indent=2)
+
+
+def subscription_key(subscription):
+    return (
+        subscription.get('endpoint', ''),
+        subscription.get('keys', {}).get('p256dh', ''),
+        subscription.get('keys', {}).get('auth', ''),
+    )
+
+
+def upsert_push_subscription(subscription):
+    subscriptions = load_push_subscriptions()
+    new_key = subscription_key(subscription)
+    filtered = [item for item in subscriptions if subscription_key(item) != new_key]
+    filtered.append(subscription)
+    save_push_subscriptions(filtered)
+
+
+def send_push_notification(title, body, url='/'):
+    if not push_enabled():
+        return
+
+    subscriptions = load_push_subscriptions()
+    if not subscriptions:
+        return
+
+    payload = json.dumps({
+        'title': title,
+        'body': body,
+        'url': url,
+    }, ensure_ascii=False)
+
+    active_subscriptions = []
+    for subscription in subscriptions:
+        try:
+            webpush(
+                subscription_info=subscription,
+                data=payload,
+                vapid_private_key=VAPID_PRIVATE_KEY,
+                vapid_claims={'sub': VAPID_CLAIMS_SUBJECT},
+            )
+            active_subscriptions.append(subscription)
+        except WebPushException as exc:
+            status_code = getattr(getattr(exc, 'response', None), 'status_code', None)
+            if status_code not in (404, 410):
+                active_subscriptions.append(subscription)
+                logger.error("Ошибка web-push: %s", exc)
+        except Exception as exc:
+            active_subscriptions.append(subscription)
+            logger.error("Неизвестная ошибка web-push: %s", exc)
+
+    if len(active_subscriptions) != len(subscriptions):
+        save_push_subscriptions(active_subscriptions)
 
 # Флаг для предотвращения повторного запуска самопинга
 _keep_alive_started = False
@@ -132,10 +217,191 @@ def start_keep_alive():
 
 
 # Запускаем самопинг при импорте модуля (работает с Gunicorn!)
-start_keep_alive()
+# start_keep_alive()
 @app.route('/')
 def index():
     return render_template('index.html', yandex_maps_key=YANDEX_MAPS_KEY)
+
+
+@app.route('/sw.js')
+def service_worker():
+    return send_from_directory('static', 'sw.js', mimetype='application/javascript')
+
+
+@app.route('/manifest.json')
+def web_manifest():
+    return jsonify({
+        'name': 'Грузоперевозки',
+        'short_name': 'Грузоперевозки',
+        'start_url': '/',
+        'display': 'standalone',
+        'background_color': '#ffffff',
+        'theme_color': '#2563eb',
+    })
+
+
+@app.route('/admin/push')
+def admin_push():
+    token = request.args.get('token', '')
+    if not ADMIN_PUSH_TOKEN or token != ADMIN_PUSH_TOKEN:
+        return Response('Forbidden', status=403)
+
+    if not push_enabled():
+        return Response('Web-push is not configured on the server.', status=503)
+
+    html = f"""<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Подписка на уведомления</title>
+  <meta name="theme-color" content="#2563eb">
+  <link rel="manifest" href="/manifest.json">
+  <style>
+    body {{
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }}
+    .card {{
+      max-width: 560px;
+      margin: 48px auto;
+      background: #fff;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }}
+    h1 {{
+      margin-top: 0;
+      font-size: 28px;
+    }}
+    p {{
+      line-height: 1.55;
+    }}
+    button {{
+      border: 0;
+      border-radius: 12px;
+      background: #2563eb;
+      color: white;
+      padding: 14px 18px;
+      font-size: 16px;
+      cursor: pointer;
+    }}
+    button:disabled {{
+      background: #9ca3af;
+      cursor: default;
+    }}
+    .status {{
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #eff6ff;
+    }}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Уведомления о новых заявках</h1>
+    <p>Откройте эту страницу на вашем телефоне и разрешите уведомления. После подписки новые заявки с сайта будут приходить как push.</p>
+    <p>На iPhone откройте страницу в Safari и добавьте её на экран Домой, затем запустите оттуда и включите уведомления.</p>
+    <button id="subscribe-btn">Включить уведомления</button>
+    <div id="status" class="status">Ожидаю подписку.</div>
+  </main>
+  <script>
+    const vapidPublicKey = {json.dumps(VAPID_PUBLIC_KEY)};
+    const adminToken = {json.dumps(ADMIN_PUSH_TOKEN)};
+
+    function urlBase64ToUint8Array(base64String) {{
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {{
+        outputArray[i] = rawData.charCodeAt(i);
+      }}
+      return outputArray;
+    }}
+
+    async function subscribe() {{
+      const status = document.getElementById('status');
+      const button = document.getElementById('subscribe-btn');
+
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {{
+        status.textContent = 'Этот браузер не поддерживает web-push.';
+        return;
+      }}
+
+      button.disabled = true;
+      status.textContent = 'Регистрирую service worker...';
+
+      try {{
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        await navigator.serviceWorker.ready;
+
+        status.textContent = 'Запрашиваю разрешение на уведомления...';
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {{
+          throw new Error('Разрешение на уведомления не выдано.');
+        }}
+
+        status.textContent = 'Создаю push-подписку...';
+        const subscription = await registration.pushManager.subscribe({{
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+        }});
+
+        status.textContent = 'Сохраняю подписку на сервере...';
+        const response = await fetch('/api/push/subscribe?token=' + encodeURIComponent(adminToken), {{
+          method: 'POST',
+          headers: {{ 'Content-Type': 'application/json' }},
+          body: JSON.stringify(subscription),
+        }});
+        const data = await response.json();
+
+        if (!data.ok) {{
+          throw new Error(data.error || 'Не удалось сохранить подписку.');
+        }}
+
+        status.textContent = 'Готово. Теперь новые заявки будут приходить на этот телефон.';
+      }} catch (error) {{
+        status.textContent = 'Ошибка: ' + error.message;
+        button.disabled = false;
+      }}
+    }}
+
+    document.getElementById('subscribe-btn').addEventListener('click', subscribe);
+  </script>
+</body>
+</html>"""
+    return Response(html, mimetype='text/html')
+
+
+@app.route('/api/push/public-key')
+def push_public_key():
+    if not push_enabled():
+        return jsonify({'ok': False, 'error': 'Push not configured'}), 503
+    return jsonify({'ok': True, 'publicKey': VAPID_PUBLIC_KEY})
+
+
+@app.route('/api/push/subscribe', methods=['POST'])
+def push_subscribe():
+    token = request.args.get('token', '')
+    if not ADMIN_PUSH_TOKEN or token != ADMIN_PUSH_TOKEN:
+        return jsonify({'ok': False, 'error': 'Forbidden'}), 403
+
+    if not push_enabled():
+        return jsonify({'ok': False, 'error': 'Push not configured'}), 503
+
+    subscription = request.get_json(silent=True) or {}
+    endpoint = subscription.get('endpoint')
+    keys = subscription.get('keys') or {}
+
+    if not endpoint or not keys.get('p256dh') or not keys.get('auth'):
+        return jsonify({'ok': False, 'error': 'Invalid subscription payload'}), 400
+
+    upsert_push_subscription(subscription)
+    return jsonify({'ok': True})
 
 @app.route('/tg-lead', methods=['POST'])
 def send_lead():
@@ -195,6 +461,11 @@ def send_lead():
 </html>"""
 
         send_lead_email(subject, text_body, html_body)
+        send_push_notification(
+            title='Новая заявка',
+            body=f'Телефон: {phone_clean}',
+            url='/#contact'
+        )
 
         logger.info(f"[{current_time}] Заявка отправлена на email: {phone_clean}")
         return jsonify({'ok': True, 'message': 'Заявка отправлена!'})

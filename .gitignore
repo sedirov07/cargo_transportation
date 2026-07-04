@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+*.pem
+
 # Distribution / packaging
 .Python
 build/
@@ -150,6 +152,7 @@ activemq-data/
 # Environments
 .env
 .envrc
+push_subscriptions.json
 .venv
 env/
 venv/
